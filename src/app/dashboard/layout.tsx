@@ -16,50 +16,26 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CURRENT_USER, UPCOMING_BOOKINGS, NOTIFICATIONS_DATA } from '@/lib/dashboard-data'
 
-const sidebarLinks = [
-  { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, color: 'text-white' },
-  { name: 'My Bookings', href: '/dashboard/bookings', icon: CalendarDays, color: 'text-teal-light', badge: UPCOMING_BOOKINGS.length },
-  { name: 'Membership', href: '/dashboard/membership', icon: Crown, color: 'text-gold' },
-  { name: 'Payments', href: '/dashboard/payments', icon: CreditCard, color: 'text-emerald-400' },
-  { name: 'Favourites', href: '/dashboard/favourites', icon: Heart, color: 'text-rose-400' },
-  { name: 'Notifications', href: '/dashboard/notifications', icon: Bell, color: 'text-white', badge: NOTIFICATIONS_DATA.filter(n => !n.read).length },
-  { name: 'Profile', href: '/dashboard/profile', icon: User, color: 'text-white/80' },
+const navLinks = [
+  { name: 'Overview', href: '/dashboard', icon: LayoutDashboard, badge: 0 },
+  { name: 'Bookings', href: '/dashboard/bookings', icon: CalendarDays, badge: UPCOMING_BOOKINGS.length },
+  { name: 'Membership', href: '/dashboard/membership', icon: Crown, badge: 0 },
+  { name: 'Payments', href: '/dashboard/payments', icon: CreditCard, badge: 0 },
+  { name: 'Favourites', href: '/dashboard/favourites', icon: Heart, badge: 0 },
+  { name: 'Notifications', href: '/dashboard/notifications', icon: Bell, badge: NOTIFICATIONS_DATA.filter(n => !n.read).length },
+  { name: 'Profile', href: '/dashboard/profile', icon: User, badge: 0 },
 ]
-
-function getBreadcrumb(pathname: string) {
-  if (pathname === '/dashboard') return [{ label: 'Dashboard', href: '/dashboard' }]
-  const segments = pathname.replace('/dashboard/', '').split('/')
-  const crumbs = [{ label: 'Dashboard', href: '/dashboard' }]
-  const labels: Record<string, string> = {
-    bookings: 'My Bookings',
-    membership: 'Membership',
-    payments: 'Payments',
-    favourites: 'Favourites',
-    notifications: 'Notifications',
-    profile: 'Profile',
-    'booking-confirmed': 'Booking Confirmed',
-  }
-  if (segments[0]) {
-    crumbs.push({ label: labels[segments[0]] || segments[0], href: `/dashboard/${segments[0]}` })
-  }
-  if (segments[1]) {
-    crumbs.push({ label: segments[1].toUpperCase(), href: pathname })
-  }
-  return crumbs
-}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [sidebarExpanded, setSidebarExpanded] = useState(false)
+  const [sidebarHover, setSidebarHover] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
-  const breadcrumbs = getBreadcrumb(pathname)
   const unreadCount = NOTIFICATIONS_DATA.filter(n => !n.read).length
 
   const isActive = (href: string) => {
@@ -67,7 +43,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return pathname.startsWith(href)
   }
 
-  // Listen for scroll on the main content area
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
@@ -78,143 +53,144 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     setMobileOpen(false)
-    setSidebarExpanded(false)
+    setSidebarHover(false)
   }, [pathname])
 
   return (
     <div className="h-screen overflow-hidden bg-cream/30 relative">
-      {/* ═══════════════ DESKTOP: FLOATING PILL (visible when NOT scrolled) ═══════════════ */}
+
+      {/* ═══════ DESKTOP: COMPACT FLOATING PILL (not scrolled) ═══════ */}
       <AnimatePresence>
         {!scrolled && (
           <motion.nav
-            initial={{ y: -80, opacity: 0 }}
+            initial={{ y: -60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -80, opacity: 0 }}
+            exit={{ y: -60, opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 hidden lg:block"
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden lg:block"
           >
-            <div className="flex items-center gap-1 px-2 py-1.5 bg-navy/70 backdrop-blur-2xl rounded-full border border-white/15 shadow-[0_8px_40px_rgba(15,44,74,0.4)]">
-              {/* Avatar + Name */}
-              <div className="flex items-center gap-2 pl-3 pr-2">
-                <div className="w-8 h-8 rounded-full bg-white/15 border border-gold/40 text-white flex items-center justify-center font-display text-xs font-semibold">
+            <div className="flex items-center gap-0.5 px-1.5 py-1 bg-navy/50 backdrop-blur-2xl rounded-full border border-white/[0.08] shadow-[0_4px_30px_rgba(15,44,74,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]">
+              {/* Avatar only */}
+              <Link href="/dashboard/profile" className="p-1 mx-0.5">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 border border-gold/40 text-white flex items-center justify-center font-display text-[10px] font-bold">
                   {CURRENT_USER.initials}
                 </div>
-                <span className="font-display text-sm font-semibold text-white hidden xl:block">
-                  {CURRENT_USER.firstName}
-                </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/20 text-gold border border-gold/30 font-sans hidden xl:flex">
-                  <Crown className="w-2.5 h-2.5" />
-                  GOLD
-                </span>
-              </div>
+              </Link>
 
-              {/* Divider */}
-              <div className="w-px h-6 bg-white/15" />
+              {/* Thin divider */}
+              <div className="w-px h-4 bg-white/10 mx-0.5" />
 
-              {/* Nav Links */}
-              {sidebarLinks.map((link) => (
+              {/* Icon-only nav links */}
+              {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   className={cn(
-                    'relative px-3.5 py-2 font-sans text-sm font-medium rounded-full transition-all duration-300 flex items-center gap-1.5',
+                    'relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 group',
                     isActive(link.href)
                       ? 'text-navy-dark'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'text-white/50 hover:text-white hover:bg-white/10'
                   )}
+                  title={link.name}
                 >
                   {isActive(link.href) && (
                     <motion.span
-                      layoutId="dashPillActive"
+                      layoutId="dashPill"
                       className="absolute inset-0 bg-gold rounded-full"
-                      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
-                  <link.icon className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10 hidden xl:inline">{link.name}</span>
-                  {link.badge && link.badge > 0 && (
-                    <span className="relative z-10 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center -ml-0.5">
+                  <link.icon className="w-3.5 h-3.5 relative z-10" />
+                  {link.badge > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 z-20 w-3.5 h-3.5 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center ring-2 ring-navy/50">
                       {link.badge}
                     </span>
                   )}
+                  {/* Tooltip */}
+                  <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-navy/90 text-white text-[10px] font-sans rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    {link.name}
+                  </span>
                 </Link>
               ))}
 
-              {/* Divider */}
-              <div className="w-px h-6 bg-white/15" />
+              {/* Thin divider */}
+              <div className="w-px h-4 bg-white/10 mx-0.5" />
 
               {/* Back to website */}
               <Link
                 href="/"
-                className="px-3 py-2 font-sans text-sm text-white/60 hover:text-white rounded-full hover:bg-white/10 transition-all duration-300"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 group"
+                title="Back to website"
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="w-3.5 h-3.5" />
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-navy/90 text-white text-[10px] font-sans rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Website
+                </span>
               </Link>
             </div>
           </motion.nav>
         )}
       </AnimatePresence>
 
-      {/* ═══════════════ DESKTOP: SIDEBAR (visible when scrolled) ═══════════════ */}
+      {/* ═══════ DESKTOP: OVAL SIDEBAR (scrolled) ═══════ */}
       <AnimatePresence>
         {scrolled && (
           <motion.nav
-            initial={{ x: -80, opacity: 0 }}
+            initial={{ x: -60, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -80, opacity: 0 }}
+            exit={{ x: -60, opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:block"
-            onMouseEnter={() => setSidebarExpanded(true)}
-            onMouseLeave={() => setSidebarExpanded(false)}
+            className="fixed left-3 top-1/2 -translate-y-1/2 z-50 hidden lg:block"
+            onMouseEnter={() => setSidebarHover(true)}
+            onMouseLeave={() => setSidebarHover(false)}
           >
             <motion.div
-              animate={{ width: sidebarExpanded ? 240 : 60 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-navy/60 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-[0_8px_40px_rgba(15,44,74,0.35)] py-3 px-2 overflow-hidden"
+              animate={{ width: sidebarHover ? 180 : 48 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-navy/40 backdrop-blur-2xl rounded-[28px] border border-white/[0.08] shadow-[0_8px_40px_rgba(15,44,74,0.25),inset_0_1px_0_rgba(255,255,255,0.06)] py-2 px-1.5 overflow-hidden"
             >
               {/* Avatar */}
-              <div className="flex items-center gap-3 px-2 py-2 mb-1">
-                <div className="w-9 h-9 rounded-full bg-white/15 border border-gold/40 text-white flex items-center justify-center font-display text-xs font-semibold shrink-0">
+              <Link href="/dashboard/profile" className="flex items-center gap-2.5 px-1.5 py-1.5 mb-1 rounded-full hover:bg-white/5 transition-colors">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 border border-gold/40 text-white flex items-center justify-center font-display text-[10px] font-bold shrink-0">
                   {CURRENT_USER.initials}
                 </div>
                 <AnimatePresence>
-                  {sidebarExpanded && (
+                  {sidebarHover && (
                     <motion.div
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
                       exit={{ opacity: 0, width: 0 }}
                       className="overflow-hidden whitespace-nowrap"
                     >
-                      <p className="font-display text-sm font-semibold text-white">
+                      <p className="font-sans text-xs font-semibold text-white leading-tight">
                         {CURRENT_USER.firstName}
                       </p>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/20 text-gold border border-gold/30 font-sans mt-0.5">
-                        <Crown className="w-2.5 h-2.5" />
-                        GOLD
-                      </span>
+                      <p className="font-sans text-[9px] text-gold font-medium">Gold</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </Link>
 
-              <div className="w-full h-px bg-white/10 mb-2" />
+              <div className="w-6 h-px bg-white/10 mx-auto my-1" />
 
-              {/* Nav Links */}
-              <div className="space-y-1">
-                {sidebarLinks.map((link) => (
+              {/* Nav */}
+              <div className="space-y-0.5">
+                {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     href={link.href}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-xl font-sans text-sm transition-all duration-300 relative',
+                      'relative flex items-center gap-2.5 px-1.5 py-1.5 rounded-full font-sans text-xs transition-all duration-300',
                       isActive(link.href)
                         ? 'bg-gold/20 text-gold'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                        : 'text-white/50 hover:text-white hover:bg-white/5'
                     )}
                   >
-                    <link.icon className={cn('w-[18px] h-[18px] shrink-0', isActive(link.href) ? 'text-gold' : '')} />
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                      <link.icon className="w-3.5 h-3.5" />
+                    </div>
                     <AnimatePresence>
-                      {sidebarExpanded && (
+                      {sidebarHover && (
                         <motion.span
                           initial={{ opacity: 0, width: 0 }}
                           animate={{ opacity: 1, width: 'auto' }}
@@ -225,35 +201,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </motion.span>
                       )}
                     </AnimatePresence>
-                    {link.badge && link.badge > 0 && (
+                    {link.badge > 0 && (
                       <span className={cn(
-                        'bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center',
-                        sidebarExpanded ? 'ml-auto' : 'absolute -top-0.5 -right-0.5'
+                        'bg-red-500 text-white text-[7px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center ring-2 ring-navy/40',
+                        sidebarHover ? 'ml-auto' : 'absolute top-0 right-0'
                       )}>
                         {link.badge}
                       </span>
                     )}
                     {isActive(link.href) && (
                       <motion.div
-                        layoutId="dashSideActive"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-gold rounded-full"
-                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                        layoutId="dashSide"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-gold rounded-full"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
                     )}
                   </Link>
                 ))}
               </div>
 
-              <div className="w-full h-px bg-white/10 my-2" />
+              <div className="w-6 h-px bg-white/10 mx-auto my-1" />
 
-              {/* Bottom links */}
+              {/* Bottom */}
               <Link
                 href="/"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-sans text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all duration-300"
+                className="flex items-center gap-2.5 px-1.5 py-1.5 rounded-full font-sans text-xs text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300"
               >
-                <Globe className="w-[18px] h-[18px] shrink-0" />
+                <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                  <Globe className="w-3.5 h-3.5" />
+                </div>
                 <AnimatePresence>
-                  {sidebarExpanded && (
+                  {sidebarHover && (
                     <motion.span
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
@@ -266,10 +244,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </AnimatePresence>
               </Link>
 
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-sans text-sm text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300">
-                <LogOut className="w-[18px] h-[18px] shrink-0" />
+              <button className="w-full flex items-center gap-2.5 px-1.5 py-1.5 rounded-full font-sans text-xs text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                  <LogOut className="w-3.5 h-3.5" />
+                </div>
                 <AnimatePresence>
-                  {sidebarExpanded && (
+                  {sidebarHover && (
                     <motion.span
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: 'auto' }}
@@ -286,48 +266,50 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
       </AnimatePresence>
 
-      {/* ═══════════════ MOBILE: FLOATING BUTTON + OVERLAY ═══════════════ */}
-      <div className="lg:hidden fixed top-4 right-4 z-50">
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="w-12 h-12 rounded-full bg-navy/70 backdrop-blur-2xl border border-white/15 flex items-center justify-center text-white shadow-[0_8px_32px_rgba(15,44,74,0.4)]"
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-        >
-          <AnimatePresence mode="wait">
-            {mobileOpen ? (
-              <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <X className="w-5 h-5" />
-              </motion.div>
-            ) : (
-              <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <Menu className="w-5 h-5" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </button>
-      </div>
-
-      {/* Mobile Logo Pill */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-navy/70 backdrop-blur-2xl rounded-full border border-white/15 shadow-[0_8px_32px_rgba(15,44,74,0.4)]">
-          <div className="w-7 h-7 rounded-full bg-white/15 border border-gold/40 text-white flex items-center justify-center font-display text-[10px] font-semibold">
-            {CURRENT_USER.initials}
+      {/* ═══════ MOBILE: BOTTOM DOCK BAR ═══════ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50">
+        <div className="mx-3 mb-3">
+          <div className="flex items-center justify-around py-2 px-1 bg-navy/50 backdrop-blur-2xl rounded-full border border-white/[0.08] shadow-[0_-4px_30px_rgba(15,44,74,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]">
+            {navLinks.slice(0, 5).map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={cn(
+                  'relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all duration-300',
+                  isActive(link.href)
+                    ? 'text-gold'
+                    : 'text-white/40 active:scale-95'
+                )}
+              >
+                {isActive(link.href) && (
+                  <motion.span
+                    layoutId="mobileDock"
+                    className="absolute inset-0 bg-gold/15 rounded-2xl"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <link.icon className="w-4.5 h-4.5 relative z-10" />
+                <span className="relative z-10 text-[9px] font-sans font-medium">{link.name}</span>
+                {link.badge > 0 && (
+                  <span className="absolute top-0.5 right-1 z-20 w-3.5 h-3.5 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
+            {/* More button */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="flex flex-col items-center gap-0.5 px-3 py-1.5 text-white/40 active:scale-95 transition-transform"
+            >
+              <Menu className="w-4.5 h-4.5" />
+              <span className="text-[9px] font-sans font-medium">More</span>
+            </button>
           </div>
-          <span className="font-display text-sm font-semibold text-white">
-            {CURRENT_USER.firstName}
-          </span>
-          {unreadCount > 0 && (
-            <Link href="/dashboard/notifications" className="relative">
-              <Bell className="w-4 h-4 text-white/60" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center">
-                {unreadCount}
-              </span>
-            </Link>
-          )}
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile "More" sheet */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -336,127 +318,133 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
             />
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:hidden fixed top-0 right-0 bottom-0 w-72 bg-navy/80 backdrop-blur-2xl border-l border-white/10 z-50 pt-20 px-5"
+              className="lg:hidden fixed bottom-0 left-0 right-0 z-50 max-h-[80vh]"
             >
-              {/* User section */}
-              <div className="flex items-center gap-3 mb-4 px-2">
-                <div className="w-10 h-10 rounded-full bg-white/15 border border-gold/40 text-white flex items-center justify-center font-display text-sm font-semibold">
-                  {CURRENT_USER.initials}
+              <div className="mx-2 mb-2 bg-navy/70 backdrop-blur-2xl rounded-3xl border border-white/[0.08] shadow-[0_-8px_40px_rgba(15,44,74,0.4)] overflow-hidden">
+                {/* Drag handle */}
+                <div className="flex justify-center pt-3 pb-2">
+                  <div className="w-10 h-1 rounded-full bg-white/20" />
                 </div>
-                <div>
-                  <p className="font-display text-base font-semibold text-white">
-                    {CURRENT_USER.firstName} {CURRENT_USER.lastName}
-                  </p>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/20 text-gold border border-gold/30 font-sans">
-                    <Crown className="w-2.5 h-2.5" />
-                    GOLD
-                  </span>
-                </div>
-              </div>
 
-              <div className="h-px bg-white/10 mb-3" />
-
-              <div className="space-y-1">
-                {sidebarLinks.map((link, i) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                {/* User card */}
+                <div className="flex items-center gap-3 mx-4 mb-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 border border-gold/40 text-white flex items-center justify-center font-display text-sm font-bold">
+                    {CURRENT_USER.initials}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-display text-base font-semibold text-white">
+                      {CURRENT_USER.firstName} {CURRENT_USER.lastName}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/20 text-gold border border-gold/30 font-sans">
+                        <Crown className="w-2.5 h-2.5" />
+                        GOLD
+                      </span>
+                      <span className="font-sans text-[10px] text-white/40">{CURRENT_USER.loyaltyPoints.toLocaleString()} pts</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setMobileOpen(false)}
+                    className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
                   >
-                    <Link
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
-                        isActive(link.href)
-                          ? 'bg-gold/20 text-gold'
-                          : 'text-white/70 hover:bg-white/5'
-                      )}
-                    >
-                      <link.icon className="w-5 h-5" />
-                      {link.name}
-                      {link.badge && link.badge > 0 && (
-                        <span className="ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                          {link.badge}
-                        </span>
-                      )}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                    <X className="w-4 h-4 text-white/60" />
+                  </button>
+                </div>
 
-              <div className="mt-4 pt-4 border-t border-white/10 space-y-1">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm text-white/60 hover:bg-white/5 transition-all"
-                >
-                  <Globe className="w-5 h-5" />
-                  Back to Website
-                </Link>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                  <LogOut className="w-5 h-5" />
-                  Sign Out
-                </button>
+                {/* All nav links */}
+                <div className="px-3 pb-2 space-y-0.5">
+                  {navLinks.map((link, i) => (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.03, duration: 0.3 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          'flex items-center gap-3 px-4 py-3 rounded-2xl font-sans text-sm font-medium transition-all',
+                          isActive(link.href)
+                            ? 'bg-gold/15 text-gold'
+                            : 'text-white/60 active:bg-white/5'
+                        )}
+                      >
+                        <link.icon className="w-5 h-5" />
+                        {link.name}
+                        {link.badge > 0 && (
+                          <span className="ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                            {link.badge}
+                          </span>
+                        )}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="mx-6 h-px bg-white/10" />
+
+                <div className="px-3 py-2 space-y-0.5">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 px-4 py-3 rounded-2xl font-sans text-sm text-white/50 active:bg-white/5 transition-all"
+                  >
+                    <Globe className="w-5 h-5" />
+                    Back to Website
+                  </Link>
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-sans text-sm text-white/50 active:text-red-400 active:bg-red-500/10 transition-all">
+                    <LogOut className="w-5 h-5" />
+                    Sign Out
+                  </button>
+                </div>
+
+                {/* Safe area spacer */}
+                <div className="h-2" />
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* ═══════════════ GLASSMORPHIC TOP HEADER BAR ═══════════════ */}
-      <header className="fixed top-0 left-0 right-0 h-14 z-30 bg-white/60 backdrop-blur-xl border-b border-white/30 shadow-[0_1px_12px_rgba(15,44,74,0.04)] flex items-center justify-between px-4 lg:px-8">
-        <div className="flex items-center gap-3">
-          {/* Breadcrumb - hidden on mobile (logo pill is there) */}
-          <nav className="hidden lg:flex items-center gap-1 font-sans text-sm">
-            {breadcrumbs.map((crumb, i) => (
-              <span key={crumb.href} className="flex items-center gap-1">
-                {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-gray-300" />}
-                {i === breadcrumbs.length - 1 ? (
-                  <span className="text-navy font-medium">{crumb.label}</span>
-                ) : (
-                  <Link href={crumb.href} className="text-gray-400 hover:text-navy transition-colors">
-                    {crumb.label}
-                  </Link>
-                )}
-              </span>
-            ))}
-          </nav>
-        </div>
-
-        <div className="hidden lg:flex items-center gap-3">
-          {/* Notification bell */}
-          <Link
-            href="/dashboard/notifications"
-            className="relative p-2 rounded-xl text-gray-400 hover:text-navy hover:bg-white/50 transition-all"
-          >
-            <Bell className="w-5 h-5" />
+      {/* ═══════ MOBILE: TOP STATUS BAR ═══════ */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-12 flex items-center justify-between px-4 bg-white/50 backdrop-blur-xl border-b border-white/20">
+        <Link href="/dashboard" className="flex items-center gap-1.5">
+          <span className="font-display text-base font-bold text-navy">EZRA</span>
+          <span className="w-1 h-1 rounded-full bg-gold inline-block" />
+          <span className="font-display text-base font-light text-navy/50">ANNEX</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/notifications" className="relative p-1.5">
+            <Bell className="w-4.5 h-4.5 text-navy/50" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute top-0.5 right-0.5 w-3 h-3 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center">
                 {unreadCount}
               </span>
             )}
           </Link>
-          {/* Avatar */}
-          <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center font-sans text-xs font-medium border border-navy/30">
-            {CURRENT_USER.initials}
-          </div>
+          <Link href="/dashboard/profile">
+            <div className="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center font-display text-[10px] font-bold">
+              {CURRENT_USER.initials}
+            </div>
+          </Link>
         </div>
-      </header>
+      </div>
 
-      {/* ═══════════════ PAGE CONTENT ═══════════════ */}
+      {/* ═══════ PAGE CONTENT ═══════ */}
       <main
         ref={scrollRef}
-        className="h-full overflow-y-auto pt-14"
+        className="h-full overflow-y-auto pt-12 lg:pt-0 pb-24 lg:pb-0"
       >
-        <div className="p-6 lg:p-8 max-w-[1200px] mx-auto pb-20 lg:pb-8">
+        {/* Spacer so content doesn't hide behind floating pill */}
+        <div className="hidden lg:block h-16" />
+        <div className="p-5 lg:p-8 max-w-[1100px] mx-auto">
           {children}
         </div>
       </main>
