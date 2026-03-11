@@ -6,6 +6,7 @@ import { ConditionalFooter } from '@/components/layout/ConditionalFooter'
 import { AIChatBubble } from '@/components/ai/AIChatBubble'
 import { ScrollProgress } from '@/components/ui/ScrollProgress'
 import { Toaster } from 'sonner'
+import { BookingProvider } from '@/lib/booking-context'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -42,7 +43,9 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-charcoal" suppressHydrationWarning>
         <ScrollProgress />
         <Navbar />
-        <main>{children}</main>
+        <BookingProvider>
+          <main>{children}</main>
+        </BookingProvider>
         <ConditionalFooter />
         <AIChatBubble />
         <Toaster

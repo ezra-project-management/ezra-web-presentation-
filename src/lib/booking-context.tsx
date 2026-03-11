@@ -3,6 +3,23 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import { UPCOMING_BOOKINGS, PAST_BOOKINGS } from './dashboard-data'
 
+// ── Per-service slot capacity (chairs / concurrent bookings allowed) ───
+export const SERVICE_CAPACITY: Record<string, number> = {
+  'salon-spa':      4,
+  'barbershop':     4,
+  'gym':            6,
+  'boardroom':      2,
+  'ballroom':       1,
+  'banquet-hall':   1,
+  'swimming-pool':  4,
+  'rooms':          3,
+  default:          4,
+}
+
+export function getServiceCapacity(slug: string): number {
+  return SERVICE_CAPACITY[slug] ?? SERVICE_CAPACITY.default
+}
+
 // ── Types ──────────────────────────────────────────────────────────────
 export type BookingStatus = 'CONFIRMED' | 'PENDING_PAYMENT' | 'COMPLETED' | 'CANCELLED'
 
@@ -30,9 +47,8 @@ export interface BookingRecord {
   cancellationDeadline: string | null
   rating: number | null
   review: string | null
-  // New fields
   bookedFor: { name: string; phone: string } | null
-  services: string[] // multi-service support
+  services: string[]
   smsReminder: boolean
 }
 
@@ -47,7 +63,7 @@ export interface StaffBlock {
 
 // ── Kenyan Public Holidays 2026 ────────────────────────────────────────
 export const PUBLIC_HOLIDAYS: { date: string; name: string }[] = [
-  { date: '2026-01-01', name: 'New Year\'s Day' },
+  { date: '2026-01-01', name: "New Year's Day" },
   { date: '2026-04-03', name: 'Good Friday' },
   { date: '2026-04-06', name: 'Easter Monday' },
   { date: '2026-05-01', name: 'Labour Day' },
@@ -59,10 +75,10 @@ export const PUBLIC_HOLIDAYS: { date: string; name: string }[] = [
   { date: '2026-12-26', name: 'Boxing Day' },
 ]
 
-// ── Closed Days (Sundays) ──────────────────────────────────────────────
+// ── Closed Days ────────────────────────────────────────────────────────
 export function isClosedDay(dateStr: string): string | null {
   const date = new Date(dateStr)
-  if (date.getDay() === 0) return 'Closed on Sundays'
+  if (date.getDay() === 0) return 'We are closed on Sundays'
   const holiday = PUBLIC_HOLIDAYS.find(h => h.date === dateStr)
   if (holiday) return `Closed — ${holiday.name}`
   return null
@@ -74,74 +90,169 @@ const INITIAL_STAFF_BLOCKS: StaffBlock[] = [
   { id: 'sb-002', staffName: 'Coach Mike T.', date: '2026-03-18', startTime: '12:00 PM', endTime: '1:00 PM', reason: 'Lunch Break' },
 ]
 
+// ── Demo seed bookings for showcase (per-service, varied availability) ─
+// Today is 2026-03-11. We'll seed March 12–20 with rich booking data.
+type SeedBooking = {
+  id: string; reference: string; service: string; serviceSlug: string
+  date: string; time: string; status: BookingStatus
+}
+
+function makeSeed(id: string, serviceSlug: string, serviceName: string, date: string, time: string): SeedBooking {
+  return { id, reference: `EZR-DEMO${id}`, service: serviceName, serviceSlug, date, time, status: 'CONFIRMED' }
+}
+
+const DEMO_BOOKINGS: SeedBooking[] = [
+  // ── Salon & Spa – March 12 (busy morning, quiet afternoon) ───────────
+  makeSeed('d001', 'salon-spa', 'Salon & Spa', '2026-03-12', '9:00 AM'),
+  makeSeed('d002', 'salon-spa', 'Salon & Spa', '2026-03-12', '9:00 AM'),
+  makeSeed('d003', 'salon-spa', 'Salon & Spa', '2026-03-12', '9:00 AM'),
+  makeSeed('d004', 'salon-spa', 'Salon & Spa', '2026-03-12', '9:00 AM'),  // FULL
+  makeSeed('d005', 'salon-spa', 'Salon & Spa', '2026-03-12', '10:00 AM'),
+  makeSeed('d006', 'salon-spa', 'Salon & Spa', '2026-03-12', '10:00 AM'),
+  makeSeed('d007', 'salon-spa', 'Salon & Spa', '2026-03-12', '10:00 AM'), // 3/4
+  makeSeed('d008', 'salon-spa', 'Salon & Spa', '2026-03-12', '11:00 AM'),
+  makeSeed('d009', 'salon-spa', 'Salon & Spa', '2026-03-12', '11:00 AM'),
+  makeSeed('d010', 'salon-spa', 'Salon & Spa', '2026-03-12', '11:00 AM'),
+  makeSeed('d011', 'salon-spa', 'Salon & Spa', '2026-03-12', '11:00 AM'), // FULL
+  makeSeed('d012', 'salon-spa', 'Salon & Spa', '2026-03-12', '12:00 PM'),
+  makeSeed('d013', 'salon-spa', 'Salon & Spa', '2026-03-12', '12:00 PM'),
+  makeSeed('d014', 'salon-spa', 'Salon & Spa', '2026-03-12', '12:00 PM'),
+  makeSeed('d015', 'salon-spa', 'Salon & Spa', '2026-03-12', '12:00 PM'), // FULL
+
+  // ── Salon & Spa – March 13 (moderate) ───────────────────────────────
+  makeSeed('d020', 'salon-spa', 'Salon & Spa', '2026-03-13', '9:00 AM'),
+  makeSeed('d021', 'salon-spa', 'Salon & Spa', '2026-03-13', '9:00 AM'),
+  makeSeed('d022', 'salon-spa', 'Salon & Spa', '2026-03-13', '10:00 AM'),
+  makeSeed('d023', 'salon-spa', 'Salon & Spa', '2026-03-13', '11:00 AM'),
+  makeSeed('d024', 'salon-spa', 'Salon & Spa', '2026-03-13', '11:00 AM'),
+  makeSeed('d025', 'salon-spa', 'Salon & Spa', '2026-03-13', '11:00 AM'),
+
+  // ── Barbershop – March 12 (moderately busy) ──────────────────────────
+  makeSeed('d030', 'barbershop', 'Barbershop', '2026-03-12', '8:00 AM'),
+  makeSeed('d031', 'barbershop', 'Barbershop', '2026-03-12', '8:00 AM'),
+  makeSeed('d032', 'barbershop', 'Barbershop', '2026-03-12', '9:00 AM'),
+  makeSeed('d033', 'barbershop', 'Barbershop', '2026-03-12', '9:00 AM'),
+  makeSeed('d034', 'barbershop', 'Barbershop', '2026-03-12', '9:00 AM'),
+  makeSeed('d035', 'barbershop', 'Barbershop', '2026-03-12', '9:00 AM'),  // FULL
+  makeSeed('d036', 'barbershop', 'Barbershop', '2026-03-12', '10:00 AM'),
+  makeSeed('d037', 'barbershop', 'Barbershop', '2026-03-12', '11:00 AM'),
+  makeSeed('d038', 'barbershop', 'Barbershop', '2026-03-12', '11:00 AM'),
+  makeSeed('d039', 'barbershop', 'Barbershop', '2026-03-12', '11:00 AM'),
+
+  // ── Barbershop – March 14 (very busy Saturday) ───────────────────────
+  makeSeed('d040', 'barbershop', 'Barbershop', '2026-03-14', '8:00 AM'),
+  makeSeed('d041', 'barbershop', 'Barbershop', '2026-03-14', '8:00 AM'),
+  makeSeed('d042', 'barbershop', 'Barbershop', '2026-03-14', '8:00 AM'),
+  makeSeed('d043', 'barbershop', 'Barbershop', '2026-03-14', '8:00 AM'),  // FULL
+  makeSeed('d044', 'barbershop', 'Barbershop', '2026-03-14', '9:00 AM'),
+  makeSeed('d045', 'barbershop', 'Barbershop', '2026-03-14', '9:00 AM'),
+  makeSeed('d046', 'barbershop', 'Barbershop', '2026-03-14', '9:00 AM'),
+  makeSeed('d047', 'barbershop', 'Barbershop', '2026-03-14', '9:00 AM'),  // FULL
+  makeSeed('d048', 'barbershop', 'Barbershop', '2026-03-14', '10:00 AM'),
+  makeSeed('d049', 'barbershop', 'Barbershop', '2026-03-14', '10:00 AM'),
+  makeSeed('d050', 'barbershop', 'Barbershop', '2026-03-14', '10:00 AM'),
+  makeSeed('d051', 'barbershop', 'Barbershop', '2026-03-14', '11:00 AM'),
+  makeSeed('d052', 'barbershop', 'Barbershop', '2026-03-14', '11:00 AM'),
+  makeSeed('d053', 'barbershop', 'Barbershop', '2026-03-14', '12:00 PM'),
+  makeSeed('d054', 'barbershop', 'Barbershop', '2026-03-14', '12:00 PM'),
+  makeSeed('d055', 'barbershop', 'Barbershop', '2026-03-14', '12:00 PM'),
+  makeSeed('d056', 'barbershop', 'Barbershop', '2026-03-14', '12:00 PM'), // FULL
+
+  // ── Gym – March 12 (mostly open, peak hours busy) ─────────────────────
+  makeSeed('d060', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),
+  makeSeed('d061', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),
+  makeSeed('d062', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),
+  makeSeed('d063', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),
+  makeSeed('d064', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),
+  makeSeed('d065', 'gym', 'Fitness Centre', '2026-03-12', '8:00 AM'),     // FULL (cap=6)
+  makeSeed('d066', 'gym', 'Fitness Centre', '2026-03-12', '9:00 AM'),
+  makeSeed('d067', 'gym', 'Fitness Centre', '2026-03-12', '9:00 AM'),
+  makeSeed('d068', 'gym', 'Fitness Centre', '2026-03-12', '9:00 AM'),
+  makeSeed('d069', 'gym', 'Fitness Centre', '2026-03-12', '9:00 AM'),
+  makeSeed('d070', 'gym', 'Fitness Centre', '2026-03-12', '10:00 AM'),
+  makeSeed('d071', 'gym', 'Fitness Centre', '2026-03-12', '10:00 AM'),
+
+  // ── Gym – March 17 (heavy bookings) ───────────────────────────────────
+  makeSeed('d080', 'gym', 'Fitness Centre', '2026-03-17', '8:00 AM'),
+  makeSeed('d081', 'gym', 'Fitness Centre', '2026-03-17', '8:00 AM'),
+  makeSeed('d082', 'gym', 'Fitness Centre', '2026-03-17', '8:00 AM'),
+  makeSeed('d083', 'gym', 'Fitness Centre', '2026-03-17', '8:00 AM'),
+  makeSeed('d084', 'gym', 'Fitness Centre', '2026-03-17', '8:00 AM'),
+  makeSeed('d085', 'gym', 'Fitness Centre', '2026-03-17', '9:00 AM'),
+  makeSeed('d086', 'gym', 'Fitness Centre', '2026-03-17', '9:00 AM'),
+  makeSeed('d087', 'gym', 'Fitness Centre', '2026-03-17', '9:00 AM'),
+  makeSeed('d088', 'gym', 'Fitness Centre', '2026-03-17', '9:00 AM'),
+  makeSeed('d089', 'gym', 'Fitness Centre', '2026-03-17', '9:00 AM'),
+  makeSeed('d090', 'gym', 'Fitness Centre', '2026-03-17', '10:00 AM'),
+  makeSeed('d091', 'gym', 'Fitness Centre', '2026-03-17', '10:00 AM'),
+  makeSeed('d092', 'gym', 'Fitness Centre', '2026-03-17', '10:00 AM'),
+  makeSeed('d093', 'gym', 'Fitness Centre', '2026-03-17', '11:00 AM'),
+  makeSeed('d094', 'gym', 'Fitness Centre', '2026-03-17', '11:00 AM'),
+
+  // ── Boardroom – March 13 (2 slots only, very limited) ─────────────────
+  makeSeed('d100', 'boardroom', 'Meeting Rooms', '2026-03-13', '9:00 AM'),
+  makeSeed('d101', 'boardroom', 'Meeting Rooms', '2026-03-13', '9:00 AM'),  // FULL (cap=2)
+  makeSeed('d102', 'boardroom', 'Meeting Rooms', '2026-03-13', '10:00 AM'),
+  makeSeed('d103', 'boardroom', 'Meeting Rooms', '2026-03-13', '1:00 PM'),
+  makeSeed('d104', 'boardroom', 'Meeting Rooms', '2026-03-13', '2:00 PM'),
+  makeSeed('d105', 'boardroom', 'Meeting Rooms', '2026-03-13', '2:00 PM'), // FULL
+
+  // ── Swimming Pool – March 12 & 19 (popular) ───────────────────────────
+  makeSeed('d110', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '8:00 AM'),
+  makeSeed('d111', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '8:00 AM'),
+  makeSeed('d112', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '8:00 AM'),
+  makeSeed('d113', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '8:00 AM'), // FULL
+  makeSeed('d114', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '9:00 AM'),
+  makeSeed('d115', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '9:00 AM'),
+  makeSeed('d116', 'swimming-pool', 'Swimming Pool Training', '2026-03-12', '9:00 AM'),
+  makeSeed('d117', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '9:00 AM'),
+  makeSeed('d118', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '9:00 AM'),
+  makeSeed('d119', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '9:00 AM'),
+  makeSeed('d120', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '9:00 AM'), // FULL
+  makeSeed('d121', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '10:00 AM'),
+  makeSeed('d122', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '10:00 AM'),
+  makeSeed('d123', 'swimming-pool', 'Swimming Pool Training', '2026-03-19', '10:00 AM'),
+]
+
 // ── Seed bookings from mock data ───────────────────────────────────────
 function seedBookings(): BookingRecord[] {
-  const upcoming: BookingRecord[] = UPCOMING_BOOKINGS.map(b => ({
-    id: b.id,
-    reference: b.reference,
-    service: b.service,
-    serviceSlug: b.serviceSlug,
-    serviceCategory: b.serviceCategory,
-    resource: b.resource,
-    staff: b.staff,
-    date: b.date,
-    time: b.time,
-    endTime: b.endTime,
-    duration: b.duration,
-    guests: b.guests,
-    status: b.status as BookingStatus,
-    amount: b.amount,
-    paymentMethod: b.paymentMethod,
-    mpesaRef: b.mpesaRef,
-    image: b.image,
-    notes: b.notes,
-    canReschedule: b.canReschedule,
-    canCancel: b.canCancel,
-    cancellationDeadline: b.cancellationDeadline,
-    rating: null,
-    review: null,
-    bookedFor: null,
-    services: [b.service],
-    smsReminder: true,
+  const base: BookingRecord[] = [
+    ...UPCOMING_BOOKINGS.map(b => ({
+      id: b.id, reference: b.reference, service: b.service, serviceSlug: b.serviceSlug,
+      serviceCategory: b.serviceCategory, resource: b.resource, staff: b.staff,
+      date: b.date, time: b.time, endTime: b.endTime, duration: b.duration,
+      guests: b.guests, status: b.status as BookingStatus, amount: b.amount,
+      paymentMethod: b.paymentMethod, mpesaRef: b.mpesaRef, image: b.image,
+      notes: b.notes, canReschedule: b.canReschedule, canCancel: b.canCancel,
+      cancellationDeadline: b.cancellationDeadline, rating: null, review: null,
+      bookedFor: null, services: [b.service], smsReminder: true,
+    })),
+    ...PAST_BOOKINGS.map(b => ({
+      id: b.id, reference: b.reference, service: b.service, serviceSlug: b.serviceSlug,
+      serviceCategory: '', resource: '', staff: '', date: b.date, time: b.time,
+      endTime: '', duration: b.duration, guests: 1, status: b.status as BookingStatus,
+      amount: b.amount, paymentMethod: b.paymentMethod, mpesaRef: null, image: b.image,
+      notes: null, canReschedule: false, canCancel: false, cancellationDeadline: null,
+      rating: b.rating, review: b.review, bookedFor: null, services: [b.service], smsReminder: true,
+    })),
+  ]
+
+  const demo: BookingRecord[] = DEMO_BOOKINGS.map(b => ({
+    id: b.id, reference: b.reference, service: b.service, serviceSlug: b.serviceSlug,
+    serviceCategory: '', resource: '', staff: '', date: b.date, time: b.time,
+    endTime: '', duration: '60 min', guests: 1, status: b.status, amount: 0,
+    paymentMethod: null, mpesaRef: null, image: '', notes: null,
+    canReschedule: false, canCancel: false, cancellationDeadline: null,
+    rating: null, review: null, bookedFor: null, services: [b.service], smsReminder: false,
   }))
 
-  const past: BookingRecord[] = PAST_BOOKINGS.map(b => ({
-    id: b.id,
-    reference: b.reference,
-    service: b.service,
-    serviceSlug: b.serviceSlug,
-    serviceCategory: '',
-    resource: '',
-    staff: '',
-    date: b.date,
-    time: b.time,
-    endTime: '',
-    duration: b.duration,
-    guests: 1,
-    status: b.status as BookingStatus,
-    amount: b.amount,
-    paymentMethod: b.paymentMethod,
-    mpesaRef: null,
-    image: b.image,
-    notes: null,
-    canReschedule: false,
-    canCancel: false,
-    cancellationDeadline: null,
-    rating: b.rating,
-    review: b.review,
-    bookedFor: null,
-    services: [b.service],
-    smsReminder: true,
-  }))
-
-  return [...upcoming, ...past]
+  return [...base, ...demo]
 }
 
 // ── Context ────────────────────────────────────────────────────────────
 interface BookingContextValue {
   bookings: BookingRecord[]
   staffBlocks: StaffBlock[]
-
   cancelBooking: (id: string) => void
   rescheduleBooking: (id: string, newDate: string, newTime: string) => void
   createBooking: (booking: Omit<BookingRecord, 'id' | 'reference'>) => BookingRecord
@@ -149,6 +260,8 @@ interface BookingContextValue {
   removeStaffBlock: (id: string) => void
   getBlockedTimes: (staffName: string, date: string) => StaffBlock[]
   getBookedTimes: (date: string) => string[]
+  /** Count confirmed bookings for a specific service + date + time */
+  getSlotBookingCount: (date: string, time: string, serviceSlug: string) => number
 }
 
 const BookingContext = createContext<BookingContextValue | null>(null)
@@ -159,7 +272,6 @@ export function useBooking() {
   return ctx
 }
 
-// ── Generate reference ─────────────────────────────────────────────────
 function generateRef() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   let code = 'EZR-'
@@ -175,27 +287,17 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const cancelBooking = useCallback((id: string) => {
     setBookings(prev =>
       prev.map(b =>
-        b.id === id
-          ? { ...b, status: 'CANCELLED' as const, canReschedule: false, canCancel: false }
-          : b
+        b.id === id ? { ...b, status: 'CANCELLED' as const, canReschedule: false, canCancel: false } : b
       )
     )
   }, [])
 
   const rescheduleBooking = useCallback((id: string, newDate: string, newTime: string) => {
-    setBookings(prev =>
-      prev.map(b =>
-        b.id === id ? { ...b, date: newDate, time: newTime } : b
-      )
-    )
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, date: newDate, time: newTime } : b))
   }, [])
 
   const createBooking = useCallback((booking: Omit<BookingRecord, 'id' | 'reference'>) => {
-    const newBooking: BookingRecord = {
-      ...booking,
-      id: `bk-${Date.now()}`,
-      reference: generateRef(),
-    }
+    const newBooking: BookingRecord = { ...booking, id: `bk-${Date.now()}`, reference: generateRef() }
     setBookings(prev => [newBooking, ...prev])
     return newBooking
   }, [])
@@ -213,25 +315,22 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   }, [staffBlocks])
 
   const getBookedTimes = useCallback((date: string) => {
-    return bookings
-      .filter(b => b.date === date && b.status !== 'CANCELLED')
-      .map(b => b.time)
+    return bookings.filter(b => b.date === date && b.status !== 'CANCELLED').map(b => b.time)
+  }, [bookings])
+
+  const getSlotBookingCount = useCallback((date: string, time: string, serviceSlug: string) => {
+    return bookings.filter(
+      b => b.date === date && b.time === time && b.serviceSlug === serviceSlug && b.status !== 'CANCELLED'
+    ).length
   }, [bookings])
 
   return (
-    <BookingContext.Provider
-      value={{
-        bookings,
-        staffBlocks,
-        cancelBooking,
-        rescheduleBooking,
-        createBooking,
-        addStaffBlock,
-        removeStaffBlock,
-        getBlockedTimes,
-        getBookedTimes,
-      }}
-    >
+    <BookingContext.Provider value={{
+      bookings, staffBlocks,
+      cancelBooking, rescheduleBooking, createBooking,
+      addStaffBlock, removeStaffBlock,
+      getBlockedTimes, getBookedTimes, getSlotBookingCount,
+    }}>
       {children}
     </BookingContext.Provider>
   )

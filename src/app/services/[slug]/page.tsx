@@ -139,6 +139,7 @@ export default function ServiceDetailPage({
           <div className="lg:col-span-2">
             <BookingWidget
               serviceName={service.name}
+              serviceSlug={service.slug}
               basePrice={service.basePrice}
               duration={service.duration}
             />
