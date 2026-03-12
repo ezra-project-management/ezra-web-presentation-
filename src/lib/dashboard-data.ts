@@ -36,7 +36,7 @@ export const UPCOMING_BOOKINGS = [
     amount: 3500,
     paymentMethod: 'MPESA',
     mpesaRef: 'QJK123ABC',
-    image: '/images/image-resizing-4.avif',
+    image: '/images/hero-spa.jpeg',
     notes: 'Preference: rose oil for massage',
     canReschedule: true,
     canCancel: true,
@@ -104,7 +104,7 @@ export const PAST_BOOKINGS = [
     paymentMethod: 'MPESA',
     rating: 5,
     review: 'Grace was absolutely amazing. Best facial I have ever had.',
-    image: '/images/image-resizing-4.avif',
+    image: '/images/hero-spa.jpeg',
   },
   {
     id: 'bk-011',
@@ -283,7 +283,7 @@ export const FAVOURITE_SERVICES = [
   {
     slug: 'salon-spa',
     name: 'Salon & Spa',
-    image: '/images/image-resizing-4.avif',
+    image: '/images/hero-spa.jpeg',
     rating: 4.9,
     basePrice: 1500,
     lastVisited: '2026-03-08',

@@ -98,7 +98,7 @@ type SeedBooking = {
 }
 
 const SERVICE_IMAGES: Record<string, string> = {
-  'salon-spa': '/images/image-resizing-4.avif',
+  'salon-spa': '/images/hero-spa.jpeg',
   'barbershop': '/images/image-resizing-5.avif',
   'gym': '/images/image-resizing-6.avif',
   'boardroom': '/images/image-resizing-7.avif',

@@ -28,7 +28,7 @@ export function CTASection() {
       >
         <Image
           src="/images/image-resizing-10.avif"
-          alt="Ezra Annex booking"
+          alt="Ezra Annex swimming pool"
           fill
           className="object-cover brightness-110"
         />

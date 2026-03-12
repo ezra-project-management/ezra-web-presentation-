@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
       'Our premium salon and spa offers a full range of beauty treatments from expert stylists and therapists. From rejuvenating facials to transformative hair styling, every visit is a sanctuary experience.',
     basePrice: 0,
     duration: '60 min',
-    image: '/images/image-resizing-3.avif',
+    image: '/images/hero-spa.jpeg',
     icon: '✦',
     highlights: [
       'Expert stylists',

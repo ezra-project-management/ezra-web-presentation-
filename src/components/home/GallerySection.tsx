@@ -9,51 +9,43 @@ import { TextReveal, LineReveal } from '@/components/ui/AnimatedSection'
 
 const galleryImages = [
   {
-    src: '/images/image-resizing-2.jpeg',
+    src: '/images/hero-banquet.jpeg',
     alt: 'Ezra Annex grand ballroom',
-    label: 'The Ballroom',
     span: 'col-span-2 row-span-2',
   },
   {
-    src: '/images/image-resizing.jpeg',
+    src: '/images/hero-table.jpeg',
     alt: 'Ezra Annex banquet table setting',
-    label: 'Fine Dining',
     span: 'col-span-1 row-span-1',
   },
   {
-    src: '/images/image-resizing-3.avif',
+    src: '/images/hero-lounge.jpeg',
     alt: 'Ezra Annex premium lounge',
-    label: 'Lounge',
     span: 'col-span-1 row-span-1',
   },
   {
     src: '/images/image-resizing-10.avif',
-    alt: 'Ezra Annex wellness centre',
-    label: 'Wellness',
+    alt: 'Ezra Annex swimming pool',
     span: 'col-span-1 row-span-2',
   },
   {
-    src: '/images/image-resizing-8.avif',
-    alt: 'Ezra Annex pool area',
-    label: 'Pool',
+    src: '/images/hero-spa.jpeg',
+    alt: 'Ezra Annex spa treatment room',
     span: 'col-span-1 row-span-1',
   },
   {
     src: '/images/image-resizing-9.avif',
     alt: 'Ezra Annex accommodation suite',
-    label: 'Suites',
     span: 'col-span-1 row-span-1',
   },
   {
-    src: '/images/image-resizing-11.avif',
+    src: '/images/image-resizing-6.avif',
     alt: 'Ezra Annex fitness centre',
-    label: 'Fitness',
     span: 'col-span-1 row-span-1',
   },
   {
-    src: '/images/image-resizing-12.avif',
-    alt: 'Ezra Annex spa treatment',
-    label: 'Spa',
+    src: '/images/image-resizing-5.avif',
+    alt: 'Ezra Annex gym',
     span: 'col-span-1 row-span-1',
   },
 ]
@@ -111,14 +103,6 @@ function GalleryCard({
         {/* Animated border glow on hover */}
         <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-gold/50 transition-all duration-700" />
         <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 shadow-[inset_0_0_40px_rgba(201,168,76,0.15)]" />
-
-        {/* Label with slide-up reveal */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
-          <div className="w-8 h-px bg-gold mb-3 transition-all duration-700 group-hover:w-12" />
-          <p className="font-display text-xl text-white font-semibold tracking-wide">
-            {image.label}
-          </p>
-        </div>
 
         {/* View indicator */}
         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
@@ -236,7 +220,7 @@ export function GallerySection() {
                   className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[92vw] max-w-5xl aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl"
                 >
                   <Dialog.Title className="sr-only">
-                    {galleryImages[selectedIndex].label}
+                    {galleryImages[selectedIndex].alt}
                   </Dialog.Title>
 
                   <AnimatePresence mode="wait">
@@ -259,10 +243,7 @@ export function GallerySection() {
 
                   {/* Bottom info bar */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-8 py-6">
-                    <p className="font-display text-2xl text-white font-semibold">
-                      {galleryImages[selectedIndex].label}
-                    </p>
-                    <p className="font-sans text-sm text-white/60 mt-1">
+                    <p className="font-sans text-sm text-white/60">
                       {selectedIndex + 1} / {galleryImages.length}
                     </p>
                   </div>
