@@ -58,8 +58,8 @@ export default function LoginPage() {
             <Image
               src="/ezralogo.jpeg"
               alt="Ezra Annex"
-              width={40}
-              height={40}
+              width={52}
+              height={52}
               className="rounded-full object-cover"
             />
             <span className="font-display text-2xl font-bold text-navy">

@@ -62,8 +62,8 @@ export function Navbar() {
                 <Image
                   src="/ezralogo.jpeg"
                   alt="Ezra Annex"
-                  width={36}
-                  height={36}
+                  width={48}
+                  height={48}
                   className="rounded-full object-cover"
                 />
               </Link>
@@ -192,8 +192,8 @@ export function Navbar() {
                 <Image
                   src="/ezralogo.jpeg"
                   alt="Ezra Annex"
-                  width={36}
-                  height={36}
+                  width={44}
+                  height={44}
                   className="rounded-full object-cover"
                 />
               </Link>
@@ -343,8 +343,8 @@ export function Navbar() {
           <Image
             src="/ezralogo.jpeg"
             alt="Ezra Annex"
-            width={32}
-            height={32}
+            width={40}
+            height={40}
             className="rounded-full object-cover"
           />
           <span className="font-display text-base font-bold text-white">EZRA</span>

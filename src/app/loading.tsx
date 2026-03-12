@@ -10,12 +10,12 @@ export default function Loading() {
 
       {/* Logo */}
       <div className="relative animate-logo-breathe">
-        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gold/30 shadow-gold">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gold/30 shadow-gold">
           <Image
             src="/ezralogo.jpeg"
             alt="Ezra Annex"
-            width={80}
-            height={80}
+            width={112}
+            height={112}
             className="object-cover"
             priority
           />
