@@ -314,10 +314,10 @@ export function Navbar() {
       </AnimatePresence>
 
       {/* ═══════════════ MOBILE NAV ═══════════════ */}
-      <div className="lg:hidden fixed top-4 right-4 z-50">
+      <div className="lg:hidden fixed top-4 right-4 z-[60]">
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="w-12 h-12 rounded-full bg-navy/80 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white shadow-lg"
+          className="w-11 h-11 rounded-full bg-navy/80 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white shadow-lg"
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
         >
           <AnimatePresence mode="wait">
@@ -334,18 +334,15 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Logo Pill */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-3 py-2 bg-navy/80 backdrop-blur-xl rounded-full border border-white/10 shadow-lg"
-        >
+      {/* Mobile Logo */}
+      <div className="lg:hidden fixed top-4 left-4 z-[60]">
+        <Link href="/" className="block">
           <Image
             src="/ezralogo.jpeg"
             alt="Ezra Annex"
             width={44}
             height={44}
-            className="rounded-full object-cover"
+            className="rounded-full object-cover shadow-lg"
           />
         </Link>
       </div>
@@ -359,16 +356,31 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+              className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:hidden fixed top-0 right-0 bottom-0 w-72 bg-navy/95 backdrop-blur-xl z-50 pt-20 px-6"
+              className="lg:hidden fixed top-0 right-0 bottom-0 w-[280px] bg-navy/95 backdrop-blur-xl z-[55] overflow-y-auto"
             >
-              <div className="space-y-2">
+              {/* Mobile menu header */}
+              <div className="flex items-center gap-3 px-6 pt-6 pb-4 border-b border-white/10">
+                <Image
+                  src="/ezralogo.jpeg"
+                  alt="Ezra Annex"
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-display text-sm font-semibold text-white">Menu</p>
+                  <p className="font-sans text-xs text-white/40">Navigate & Book</p>
+                </div>
+              </div>
+
+              <div className="px-4 pt-4 space-y-1">
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.name}
@@ -376,52 +388,77 @@ export function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.08, duration: 0.4 }}
                   >
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
-                        pathname === link.href
-                          ? 'bg-gold/20 text-gold'
-                          : 'text-white/70 hover:bg-white/5'
-                      )}
-                    >
-                      <link.icon className="w-5 h-5" />
-                      {link.name}
-                    </Link>
-                    {link.hasDropdown && (
-                      <div className="ml-8 mt-1 space-y-1">
-                        {SERVICES.slice(0, 4).map((service) => (
-                          <Link
-                            key={service.id}
-                            href={`/services/${service.slug}`}
-                            className="block font-sans text-xs text-white/40 hover:text-gold py-1.5 transition-colors"
-                          >
-                            {service.icon} {service.name}
-                          </Link>
-                        ))}
-                        <Link
-                          href="/services"
-                          className="block font-sans text-xs text-gold/70 py-1.5"
+                    {link.hasDropdown ? (
+                      <>
+                        <button
+                          onClick={() => setServicesOpen(!servicesOpen)}
+                          className={cn(
+                            'flex items-center justify-between w-full px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
+                            pathname === link.href
+                              ? 'bg-gold/20 text-gold'
+                              : 'text-white/70 active:bg-white/5'
+                          )}
                         >
-                          View all services →
-                        </Link>
-                      </div>
+                          <span className="flex items-center gap-3">
+                            <link.icon className="w-5 h-5" />
+                            {link.name}
+                          </span>
+                          <ChevronDown className={cn('w-4 h-4 transition-transform duration-300', servicesOpen && 'rotate-180')} />
+                        </button>
+                        <AnimatePresence>
+                          {servicesOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                              className="overflow-hidden"
+                            >
+                              <div className="ml-4 pl-4 border-l border-white/10 mt-1 space-y-0.5 pb-2">
+                                {SERVICES.map((service) => (
+                                  <Link
+                                    key={service.id}
+                                    href={`/services/${service.slug}`}
+                                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg font-sans text-sm text-white/50 active:bg-white/5 hover:text-gold transition-colors"
+                                  >
+                                    <span>{service.icon}</span>
+                                    {service.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          'flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
+                          pathname === link.href
+                            ? 'bg-gold/20 text-gold'
+                            : 'text-white/70 active:bg-white/5'
+                        )}
+                      >
+                        <link.icon className="w-5 h-5" />
+                        {link.name}
+                      </Link>
                     )}
                   </motion.div>
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+              <div className="mx-4 mt-4 pt-4 border-t border-white/10 space-y-2 pb-8">
                 <Link
                   href="/auth/login"
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm text-white/70 hover:bg-white/5 transition-all"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm text-white/70 active:bg-white/5 transition-all"
                 >
                   <LogIn className="w-5 h-5" />
                   Login
                 </Link>
                 <Link
                   href="/services"
-                  className="block text-center font-sans text-sm font-medium px-6 py-3 bg-gold text-navy-dark rounded-xl"
+                  className="block text-center font-sans text-sm font-semibold px-6 py-3.5 bg-gold text-navy-dark rounded-xl shadow-gold"
                 >
                   Book Now
                 </Link>
