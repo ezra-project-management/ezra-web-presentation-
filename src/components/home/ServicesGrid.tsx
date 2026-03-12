@@ -1,11 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { SERVICES } from '@/lib/services'
 import { AnimatedSection, TextReveal, LineReveal } from '@/components/ui/AnimatedSection'
 
 export function ServicesGrid() {
+  const router = useRouter()
+
   return (
     <section className="py-28 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,10 +27,14 @@ export function ServicesGrid() {
         {/* Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {SERVICES.map((service) => (
-            <Link
+            <a
               key={service.id}
               href={`/services/${service.slug}`}
-              className="group block"
+              onClick={(e) => {
+                e.preventDefault()
+                router.push(`/services/${service.slug}`)
+              }}
+              className="group block cursor-pointer"
             >
               <div className="relative overflow-hidden rounded-xl shadow-lg bg-white border-t-2 border-transparent hover:border-gold transition-all duration-700 hover:-translate-y-2">
                 {/* Image */}
@@ -68,7 +74,7 @@ export function ServicesGrid() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>
