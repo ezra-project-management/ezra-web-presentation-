@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
       'Our premium salon and spa offers a full range of beauty treatments from expert stylists and therapists. From rejuvenating facials to transformative hair styling, every visit is a sanctuary experience.',
     basePrice: 0,
     duration: '60 min',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
+    image: '/images/image-resizing-3.avif',
     icon: '✦',
     highlights: [
       'Expert stylists',
@@ -66,7 +66,7 @@ export const SERVICES: Service[] = [
       'Our master barbers deliver precision cuts and traditional grooming in a premium setting. Offering appointments and walk-in service for the discerning gentleman.',
     basePrice: 0,
     duration: '45 min',
-    image: 'https://images.unsplash.com/photo-1503951914875-452c4e4d7960?w=800&q=80',
+    image: '/images/image-resizing-4.avif',
     icon: '✂',
     highlights: [
       'Master barbers',
@@ -93,7 +93,7 @@ export const SERVICES: Service[] = [
       'Train in our fully equipped modern gym with certified personal trainers, group classes, and a motivating environment that helps you achieve your fitness goals.',
     basePrice: 0,
     duration: 'Per session',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
+    image: '/images/image-resizing-5.avif',
     icon: '⊕',
     highlights: [
       'Modern equipment',
