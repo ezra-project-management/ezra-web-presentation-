@@ -8,13 +8,13 @@ import { ChevronDown } from 'lucide-react'
 
 const heroSlides = [
   {
-    image: '/images/image-resizing-2.jpeg',
+    image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/4e93453c-c18f-40f7-1d44-47348a51c600/public',
     badge: "Nairobi's Premier Destination",
     heading: ['Where Luxury Meets', 'Every Experience'],
     subtitle: 'Discover world-class salon, fitness, events, and accommodation — all in one extraordinary place.',
   },
   {
-    image: '/images/image-resizing-12.avif',
+    image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/35e8e239-1bcf-420b-8b1b-25493742f600/public',
     badge: 'Wellness & Beauty',
     heading: ['Rejuvenate Your', 'Body & Soul'],
     subtitle: 'Indulge in premium spa treatments, expert styling, and holistic wellness services tailored to you.',
@@ -26,7 +26,7 @@ const heroSlides = [
     subtitle: 'From sunrise workouts to evening retreats — experience luxury living at its finest.',
   },
   {
-    image: '/images/image-resizing-8.avif',
+    image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/fe2b36a1-529b-43dd-0205-06cb17418000/public',
     badge: 'Unforgettable Events',
     heading: ['Grand Celebrations', 'Perfectly Crafted'],
     subtitle: 'From intimate dinners to lavish galas — our ballroom and banquet halls set the stage for memories that last.',
