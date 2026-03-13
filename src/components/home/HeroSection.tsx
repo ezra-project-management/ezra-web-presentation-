@@ -20,7 +20,7 @@ const heroSlides = [
     subtitle: 'Indulge in premium spa treatments, expert styling, and holistic wellness services tailored to you.',
   },
   {
-    image: '/images/image-resizing-9.avif',
+    image: '/images/image-resizing-4.avif',
     badge: 'Premium Lifestyle',
     heading: ['Elevate Every', 'Moment Here'],
     subtitle: 'From sunrise workouts to evening retreats — experience luxury living at its finest.',
@@ -95,7 +95,8 @@ export function HeroSection() {
               alt="Ezra Annex"
               fill
               priority
-              className="object-cover brightness-105"
+              quality={90}
+              className="object-cover brightness-110 contrast-[1.02] saturate-[1.1]"
             />
           </motion.div>
         </AnimatePresence>
