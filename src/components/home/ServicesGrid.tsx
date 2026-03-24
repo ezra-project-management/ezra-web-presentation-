@@ -45,7 +45,8 @@ export function ServicesGrid() {
                     fill
                     className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.15]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 opacity-80 transition-opacity duration-700" />
+                  {/* Localized content gradient for better image and text visibility */}
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90 transition-opacity duration-700" />
                 </div>
 
                 {/* Content */}
