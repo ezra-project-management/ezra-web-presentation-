@@ -9,42 +9,42 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 const galleryImages = [
   {
     src: '/images/image-resizing-2.jpeg',
-    alt: 'Ezra Annex ballroom tables',
+    alt: 'Ezra Center ballroom tables',
     label: 'Grand Ballroom',
   },
   {
     src: '/images/image-resizing.jpeg',
-    alt: 'Ezra Annex dining',
+    alt: 'Ezra Center dining',
     label: 'Fine Dining',
   },
   {
     src: '/images/image-resizing-9.avif',
-    alt: 'Ezra Annex luxury suite',
+    alt: 'Ezra Center luxury suite',
     label: 'Premium Suites',
   },
   {
     src: '/images/image-resizing-6.avif',
-    alt: 'Ezra Annex lobby',
+    alt: 'Ezra Center lobby',
     label: 'Luxury Lounge',
   },
   {
     src: '/images/image-resizing-10.avif',
-    alt: 'Ezra Annex pool',
+    alt: 'Ezra Center pool',
     label: 'Poolside',
   },
   {
     src: '/images/image-resizing-4.avif',
-    alt: 'Ezra Annex premium lounge',
+    alt: 'Ezra Center premium lounge',
     label: 'Relaxation Zone',
   },
   {
     src: '/images/image-resizing-5.avif',
-    alt: 'Ezra Annex gym',
+    alt: 'Ezra Center gym',
     label: 'Fitness Centre',
   },
   {
     src: '/images/image-resizing-8.avif',
-    alt: 'Ezra Annex exterior',
+    alt: 'Ezra Center exterior',
     label: 'Modern Facade',
   },
 ]

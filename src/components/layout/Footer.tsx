@@ -37,14 +37,14 @@ export function Footer() {
             <Link href="/" className="inline-block mb-4">
               <Image
                 src="/ezralogo.jpeg"
-                alt="Ezra Annex"
+                alt="Ezra Center"
                 width={72}
                 height={72}
                 className="rounded-full object-cover"
               />
             </Link>
             <p className="font-sans text-sm text-white/60 leading-relaxed mb-6">
-              A place to look and feel your best, right in the heart of Nairobi.
+              A place to look and feel your best — all under one roof.
             </p>
             <div className="flex gap-3">
               {socials.map((social) => (
@@ -107,7 +107,7 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gold mt-0.5 shrink-0" />
                 <span className="font-sans text-sm text-white/60">
-                  Nairobi, Kenya
+                  Ezra Center
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -119,7 +119,7 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-gold mt-0.5 shrink-0" />
                 <span className="font-sans text-sm text-white/60">
-                  hello@ezraannex.com
+                  hello@ezracenter.com
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -136,7 +136,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-gold/20">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="font-sans text-sm text-white/40">
-              &copy; 2026 Ezra Annex. All rights reserved.
+              &copy; 2026 Ezra Center. All rights reserved.
             </p>
             <p className="font-sans text-sm text-white/40">
               Powered by{' '}

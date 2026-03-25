@@ -43,7 +43,7 @@ export function TestimonialsSection() {
           >
             {ALL_TESTIMONIALS.map((testimonial, index) => (
               <div
-                key={`${testimonial.name}-${index}`}
+                key={`testimonial-${index}`}
                 className="w-[320px] md:w-[400px] shrink-0"
                 style={{ perspective: '1000px' }}
               >
@@ -62,19 +62,11 @@ export function TestimonialsSection() {
                     &ldquo;{testimonial.text}&rdquo;
                   </p>
 
-                  {/* Author */}
-                  <div className="flex items-center gap-3 mt-6 pt-4 border-t border-charcoal/5">
-                    <div className="w-10 h-10 rounded-full bg-navy text-white flex items-center justify-center font-sans font-medium text-sm group-hover/card:bg-gold group-hover/card:text-navy-dark transition-colors duration-500">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <p className="font-sans text-sm font-semibold text-navy">
-                        {testimonial.name}
-                      </p>
-                      <p className="font-sans text-xs text-charcoal/50">
-                        {testimonial.role}
-                      </p>
-                    </div>
+                  {/* Role */}
+                  <div className="mt-6 pt-4 border-t border-charcoal/5">
+                    <p className="font-sans text-xs text-charcoal/50">
+                      {testimonial.role}
+                    </p>
                   </div>
                 </div>
               </div>

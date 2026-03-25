@@ -45,14 +45,14 @@ export default function RegisterPage() {
       <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center">
         <Image
           src="/images/image-resizing-2.jpeg"
-          alt="Ezra Annex"
+          alt="Ezra Center"
           fill
           className="object-cover brightness-110"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-navy/55 via-navy/40 to-navy/50" />
         <div className="relative z-10 text-center px-12">
           <h2 className="font-display text-4xl text-white font-semibold">
-            Join Ezra Annex
+            Join Ezra Center
           </h2>
           <p className="mt-4 font-sans text-white/70">
             Create your account and unlock exclusive access to premium services.
@@ -67,7 +67,7 @@ export default function RegisterPage() {
           <Link href="/" className="inline-block">
             <Image
               src="/ezralogo.jpeg"
-              alt="Ezra Annex"
+              alt="Ezra Center"
               width={100}
               height={100}
               className="rounded-full object-cover shadow-md"

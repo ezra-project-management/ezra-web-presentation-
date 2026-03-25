@@ -19,7 +19,7 @@ export default function Loading() {
           <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gold/40 shadow-[0_0_40px_rgba(201,168,76,0.2)]">
             <Image
               src="/ezralogo.jpeg"
-              alt="Ezra Annex"
+              alt="Ezra Center"
               width={128}
               height={128}
               className="object-cover"

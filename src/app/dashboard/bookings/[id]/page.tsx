@@ -59,9 +59,9 @@ function generateICS(booking: { date: string; time: string; service: string; ref
 VERSION:2.0
 BEGIN:VEVENT
 DTSTART:${start}
-SUMMARY:${booking.service} at Ezra Annex
+SUMMARY:${booking.service} at Ezra Center
 DESCRIPTION:Booking ref ${booking.reference}
-LOCATION:Ezra Annex
+LOCATION:Ezra Center
 END:VEVENT
 END:VCALENDAR`
   const blob = new Blob([ics], { type: 'text/calendar' })
@@ -256,7 +256,7 @@ export default function BookingDetailPage() {
                   { icon: CalendarDays, label: 'Date', value: formatDate(booking.date) },
                   { icon: Clock, label: 'Time', value: `${booking.time}${booking.endTime ? ` - ${booking.endTime}` : ''}` },
                   { icon: Clock, label: 'Duration', value: booking.duration },
-                  { icon: MapPin, label: 'Location', value: booking.resource || 'Ezra Annex' },
+                  { icon: MapPin, label: 'Location', value: booking.resource || 'Ezra Center' },
                   { icon: Users, label: 'Staff', value: booking.staff || '-' },
                   { icon: Users, label: 'Guests', value: String(booking.guests) },
                 ].map((item) => (

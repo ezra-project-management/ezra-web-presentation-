@@ -37,7 +37,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center">
         <Image
           src="/images/image-resizing-2.jpeg"
-          alt="Ezra Annex"
+          alt="Ezra Center"
           fill
           className="object-cover brightness-110"
         />
@@ -59,7 +59,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-block">
             <Image
               src="/ezralogo.jpeg"
-              alt="Ezra Annex"
+              alt="Ezra Center"
               width={100}
               height={100}
               className="rounded-full object-cover shadow-md"

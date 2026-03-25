@@ -69,7 +69,7 @@ export default function MembershipPage() {
             <div className="relative z-10 flex items-start justify-between">
               <Image
                 src="/ezralogo.jpeg"
-                alt="Ezra Annex"
+                alt="Ezra Center"
                 width={48}
                 height={48}
                 className="rounded-full object-cover"

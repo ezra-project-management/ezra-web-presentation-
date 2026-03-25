@@ -428,7 +428,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Link href="/dashboard" className="flex items-center gap-1.5">
           <span className="font-display text-base font-bold text-navy">EZRA</span>
           <span className="w-1 h-1 rounded-full bg-gold inline-block" />
-          <span className="font-display text-base font-light text-navy/50">ANNEX</span>
+          <span className="font-display text-base font-light text-navy/50">CENTER</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link href="/dashboard/notifications" className="relative p-1.5">

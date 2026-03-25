@@ -21,7 +21,7 @@ export default function ServicesPage() {
       <section className="relative h-64 md:h-80 flex items-center justify-center overflow-hidden">
         <Image
           src="/images/hero-lounge.jpeg"
-          alt="Ezra Annex services"
+          alt="Ezra Center services"
           fill
           priority
           className="object-cover brightness-110"

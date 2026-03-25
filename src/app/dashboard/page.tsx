@@ -1,9 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   CalendarDays,
   Star,
@@ -15,20 +16,31 @@ import {
   Users,
   ChevronRight,
   ChevronDown,
+  ChevronLeft,
   Crown,
+  Plus,
+  Check,
+  X,
 } from 'lucide-react'
 import CountUp from 'react-countup'
+import { toast } from 'sonner'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils'
 import { SERVICES } from '@/lib/services'
+import type { Service } from '@/lib/services'
 import {
   CURRENT_USER,
   SPENDING_CHART_DATA,
   SERVICE_HISTORY_CHART,
 } from '@/lib/dashboard-data'
-import { useBooking } from '@/lib/booking-context'
+import { useBooking, isClosedDay, getServiceCapacity } from '@/lib/booking-context'
+
+const TIME_SLOTS = [
+  '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
+  '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM',
+]
 
 function getGreeting() {
   const hour = new Date().getHours()
@@ -69,7 +81,7 @@ const statusLabel: Record<string, string> = {
 
 export default function DashboardPage() {
   const greeting = useMemo(() => getGreeting(), [])
-  const { bookings } = useBooking()
+  const { bookings, createBooking, getSlotBookingCount } = useBooking()
   const upcomingBookings = useMemo(() =>
     bookings.filter(b => b.status === 'CONFIRMED' || b.status === 'PENDING_PAYMENT'),
     [bookings]
@@ -82,6 +94,98 @@ export default function DashboardPage() {
   const otherUpcoming = upcomingBookings.slice(1)
   const [qrOpen, setQrOpen] = useState(false)
   const [showAllUpcoming, setShowAllUpcoming] = useState(false)
+  const router = useRouter()
+
+  // Calendar state
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth(), 1)
+  })
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear()
+    const month = calendarMonth.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const days: (number | null)[] = []
+    for (let i = 0; i < firstDay; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(i)
+    return days
+  }, [calendarMonth])
+
+  const bookingDates = useMemo(() => {
+    const dates = new Set<string>()
+    upcomingBookings.forEach(b => dates.add(b.date))
+    return dates
+  }, [upcomingBookings])
+
+  const todayStr = useMemo(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  }, [])
+
+  const getDayDateStr = useCallback((day: number) => {
+    return `${calendarMonth.getFullYear()}-${String(calendarMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  }, [calendarMonth])
+
+  const isToday = useCallback((day: number) => getDayDateStr(day) === todayStr, [getDayDateStr, todayStr])
+
+  const hasBooking = useCallback((day: number) => bookingDates.has(getDayDateStr(day)), [getDayDateStr, bookingDates])
+
+  const prevMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))
+  const nextMonthFn = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))
+
+  const handleDateClick = (day: number) => {
+    const dateStr = getDayDateStr(day)
+    if (dateStr < todayStr) return
+    const closed = isClosedDay(dateStr)
+    if (closed) { toast.error(closed); return }
+    setSelectedDate(dateStr)
+    setSelectedService(null)
+    setSelectedTime(null)
+  }
+
+  const handleQuickBook = () => {
+    if (!selectedDate || !selectedService || !selectedTime) return
+    const capacity = getServiceCapacity(selectedService.slug)
+    const booked = getSlotBookingCount(selectedDate, selectedTime, selectedService.slug)
+    if (booked >= capacity) { toast.error('This slot is fully booked'); return }
+
+    createBooking({
+      service: selectedService.name,
+      serviceSlug: selectedService.slug,
+      serviceCategory: selectedService.category,
+      resource: '',
+      staff: '',
+      date: selectedDate,
+      time: selectedTime,
+      endTime: '',
+      duration: selectedService.duration,
+      guests: 1,
+      status: 'CONFIRMED',
+      amount: selectedService.basePrice,
+      paymentMethod: null,
+      mpesaRef: null,
+      image: selectedService.image,
+      notes: null,
+      canReschedule: true,
+      canCancel: true,
+      cancellationDeadline: selectedDate,
+      rating: null,
+      review: null,
+      bookedFor: null,
+      services: [selectedService.name],
+      smsReminder: true,
+    })
+
+    toast.success(`${selectedService.name} booked for ${new Date(selectedDate).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} at ${selectedTime}`)
+    setSelectedDate(null)
+    setSelectedService(null)
+    setSelectedTime(null)
+  }
 
   return (
     <div className="space-y-8">
@@ -103,7 +207,7 @@ export default function DashboardPage() {
                   <p className="font-sans text-white/60 text-sm">Welcome back to</p>
                   <Image
                     src="/ezralogo.jpeg"
-                    alt="Ezra Annex"
+                    alt="Ezra Center"
                     width={28}
                     height={28}
                     className="rounded-full object-cover inline-block"
@@ -111,7 +215,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <Link
-                href="/services"
+                href="/dashboard/bookings/new"
                 className="bg-gold text-navy font-sans font-semibold text-sm rounded-full px-6 py-2.5 hover:bg-gold-light transition-all duration-300 shadow-md hover:shadow-gold flex items-center gap-2"
               >
                 Book a Service
@@ -147,7 +251,235 @@ export default function DashboardPage() {
         </div>
       </AnimatedSection>
 
-      {/* Section B — Next Appointment */}
+      {/* Section B — Interactive Calendar & Quick Book */}
+      <AnimatedSection delay={0.06}>
+        <div className="bg-gradient-to-br from-white to-cream/40 rounded-2xl shadow-card p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-display text-xl lg:text-2xl text-navy font-semibold">
+              Your Calendar
+            </h2>
+            {selectedDate && (
+              <button
+                onClick={() => { setSelectedDate(null); setSelectedService(null); setSelectedTime(null) }}
+                className="flex items-center gap-1.5 font-sans text-sm text-charcoal/50 hover:text-navy transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Calendar */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <button onClick={prevMonth} className="p-2 rounded-full hover:bg-cream transition-colors">
+                  <ChevronLeft className="w-5 h-5 text-navy" />
+                </button>
+                <h3 className="font-display text-lg text-navy font-semibold">
+                  {calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </h3>
+                <button onClick={nextMonthFn} className="p-2 rounded-full hover:bg-cream transition-colors">
+                  <ChevronRight className="w-5 h-5 text-navy" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                  <div key={d} className="text-center font-sans text-[10px] text-charcoal/40 uppercase tracking-wider py-1">
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-1">
+                {calendarDays.map((day, i) => {
+                  if (day === null) return <div key={`e-${i}`} />
+                  const dateStr = getDayDateStr(day)
+                  const isPast = dateStr < todayStr
+                  const isSelected = dateStr === selectedDate
+                  const isTodayDay = isToday(day)
+                  const hasBookingDay = hasBooking(day)
+                  const closed = isClosedDay(dateStr)
+
+                  return (
+                    <button
+                      key={dateStr}
+                      disabled={isPast || !!closed}
+                      onClick={() => handleDateClick(day)}
+                      className={cn(
+                        'aspect-square flex items-center justify-center relative rounded-lg font-sans text-sm transition-all duration-200',
+                        isPast || closed ? 'text-charcoal/20 cursor-not-allowed' :
+                        isSelected ? 'bg-gold text-navy-dark font-bold shadow-md' :
+                        isTodayDay ? 'ring-2 ring-gold/50 text-gold font-bold hover:bg-gold/10' :
+                        hasBookingDay ? 'bg-gold/15 text-navy font-medium hover:bg-gold/25' :
+                        'text-charcoal/70 hover:bg-cream cursor-pointer'
+                      )}
+                    >
+                      {day}
+                      {hasBookingDay && !isSelected && (
+                        <span className="absolute bottom-1 w-1 h-1 rounded-full bg-gold" />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-5 mt-4 pt-4 border-t border-gray-100">
+                <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
+                  <span className="w-2 h-2 rounded-full bg-gold" /> Today
+                </span>
+                <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
+                  <span className="w-2 h-2 rounded-full bg-gold/30" /> Booked
+                </span>
+              </div>
+            </div>
+
+            {/* Right panel — Booking Flow */}
+            <div className="min-h-[300px]">
+              <AnimatePresence mode="wait">
+                {!selectedDate ? (
+                  <motion.div
+                    key="prompt"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex flex-col items-center justify-center h-full text-center py-12"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center mb-4">
+                      <CalendarDays className="w-7 h-7 text-gold" />
+                    </div>
+                    <p className="font-display text-lg text-navy font-semibold">Select a date</p>
+                    <p className="font-sans text-sm text-charcoal/50 mt-1">Pick a day to start booking</p>
+                  </motion.div>
+                ) : !selectedService ? (
+                  <motion.div
+                    key="service-pick"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="font-sans text-xs uppercase tracking-widest text-charcoal/40 mb-1">
+                      {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+                    </p>
+                    <p className="font-display text-lg text-navy font-semibold mb-4">Choose a service</p>
+                    <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                      {SERVICES.map(service => (
+                        <button
+                          key={service.id}
+                          onClick={() => { setSelectedService(service); setSelectedTime(null) }}
+                          className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border border-gray-100 hover:border-gold/40 hover:shadow-sm transition-all duration-200 text-left group"
+                        >
+                          <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0">
+                            <Image src={service.image} alt={service.name} fill className="object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-sans text-sm font-medium text-navy group-hover:text-gold transition-colors truncate">
+                              {service.name}
+                            </p>
+                            <p className="font-sans text-[10px] text-charcoal/50">{service.duration}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-charcoal/30 group-hover:text-gold transition-colors shrink-0" />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="time-pick"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <button
+                      onClick={() => { setSelectedService(null); setSelectedTime(null) }}
+                      className="flex items-center gap-1 font-sans text-xs text-charcoal/50 hover:text-navy transition-colors mb-3"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" /> Back to services
+                    </button>
+
+                    <div className="flex items-center gap-3 mb-4 p-3 bg-cream/60 rounded-xl">
+                      <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                        <Image src={selectedService.image} alt={selectedService.name} fill className="object-cover" />
+                      </div>
+                      <div>
+                        <p className="font-sans text-sm font-semibold text-navy">{selectedService.name}</p>
+                        <p className="font-sans text-[10px] text-charcoal/50">
+                          {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} &middot; {selectedService.duration}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="font-sans text-xs uppercase tracking-widest text-charcoal/40 mb-3">Pick a time</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {TIME_SLOTS.map(time => {
+                        const booked = getSlotBookingCount(selectedDate, time, selectedService.slug)
+                        const capacity = getServiceCapacity(selectedService.slug)
+                        const isFull = booked >= capacity
+                        const isFew = booked >= capacity - 1 && !isFull
+                        const isSelected = time === selectedTime
+
+                        return (
+                          <button
+                            key={time}
+                            disabled={isFull}
+                            onClick={() => setSelectedTime(time)}
+                            className={cn(
+                              'relative px-3 py-2.5 rounded-lg font-sans text-sm font-medium transition-all duration-200 border',
+                              isFull ? 'border-red-100 bg-red-50/50 text-red-300 cursor-not-allowed' :
+                              isSelected ? 'border-gold bg-gold text-navy-dark shadow-sm' :
+                              isFew ? 'border-amber-200 bg-amber-50/50 text-amber-700 hover:border-amber-400' :
+                              'border-gray-100 bg-white text-charcoal hover:border-gold/40'
+                            )}
+                          >
+                            {time}
+                            {isSelected && (
+                              <span className="absolute -top-1 -right-1 w-4 h-4 bg-gold rounded-full flex items-center justify-center shadow">
+                                <Check className="w-2.5 h-2.5 text-navy-dark" />
+                              </span>
+                            )}
+                            {isFull && (
+                              <span className="block text-[9px] font-normal mt-0.5">Full</span>
+                            )}
+                            {isFew && !isSelected && (
+                              <span className="block text-[9px] font-normal mt-0.5">Last spot</span>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    {/* Confirm button */}
+                    <AnimatePresence>
+                      {selectedTime && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="mt-5"
+                        >
+                          <button
+                            onClick={handleQuickBook}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-gold text-navy-dark font-sans font-semibold text-sm rounded-xl hover:bg-gold-light transition-all duration-300 shadow-md hover:shadow-lg"
+                          >
+                            Confirm Booking
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* Section C — Next Appointment */}
       <AnimatedSection delay={0.08}>
         <div className="bg-gradient-to-br from-white to-cream/40 rounded-2xl shadow-card p-6 lg:p-8">
           <div className="flex items-center justify-between mb-6">

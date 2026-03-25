@@ -1,36 +1,16 @@
 'use client'
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 
-const heroSlides = [
-  {
-    image: '/images/image-resizing-2.jpeg',
-    badge: "Welcome to Ezra Annex",
-    heading: ['The Heart of', 'Nairobi Style'],
-    subtitle: 'Your local spot for a fresh look, a great workout, and a place to stay — all in one building.',
-  },
-  {
-    image: '/images/image-resizing-8.avif',
-    badge: 'A Better Way to Live',
-    heading: ['Make the Most', 'of Every Day'],
-    subtitle: 'Start with a morning workout and end with a relaxing evening retreat — we handle the rest.',
-  },
-  {
-    image: '/images/image-resizing.jpeg',
-    badge: 'Host Your Next Event',
-    heading: ['Celebrations Made', 'Just for You'],
-    subtitle: "Whether it's a family dinner or a big party, we'll help you make it a night to remember.",
-  },
-  {
-    image: '/images/image-resizing-2.avif',
-    badge: 'Take a Break',
-    heading: ['Refresh Your', 'Look & Feel'],
-    subtitle: 'Treat yourself to a new style or a relaxing day at the spa designed for exactly what you need.',
-  },
+const heroImages = [
+  '/images/image-resizing-2.jpeg',
+  '/images/image-resizing-8.avif',
+  '/images/image-resizing.jpeg',
+  '/images/image-resizing-2.avif',
 ]
 
 const floatingPills = [
@@ -45,30 +25,19 @@ export function HeroSection() {
     target: sectionRef,
     offset: ['start start', 'end start'],
   })
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [direction, setDirection] = useState(0) // 0 for initial, 1 for next, -1 for prev
+  const [currentImage, setCurrentImage] = useState(0)
 
-  const goToSlide = useCallback((index: number) => {
-    setDirection(index > currentSlide ? 1 : -1)
-    setCurrentSlide(index)
-  }, [currentSlide])
-
-  // Auto-rotate
+  // Auto-rotate background images
   useEffect(() => {
     const interval = setInterval(() => {
-      setDirection(1)
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+      setCurrentImage((prev) => (prev + 1) % heroImages.length)
     }, 6000)
     return () => clearInterval(interval)
   }, [])
 
   // Parallax
-  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.1, 1.2])
   const contentY = useTransform(scrollYProgress, [0, 0.5], ['0%', '10%'])
   const contentOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0])
-
-  const slide = heroSlides[currentSlide]
 
   return (
     <section
@@ -79,20 +48,20 @@ export function HeroSection() {
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence initial={false}>
           <motion.div
-            key={currentSlide}
+            key={currentImage}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5 }}
             className="absolute inset-0"
           >
-            <motion.div 
+            <motion.div
               animate={{ scale: [1, 1.1] }}
               transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
               className="relative w-full h-full"
             >
               <Image
-                src={slide.image}
+                src={heroImages[currentImage]}
                 alt=""
                 fill
                 priority
@@ -103,10 +72,10 @@ export function HeroSection() {
         </AnimatePresence>
       </div>
 
-      {/* Cinematic Overlays (Local to Background) */}
+      {/* Cinematic Overlays */}
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
 
-      {/* Content Layered for Premium Look */}
+      {/* Content */}
       <div className="relative z-10 w-full h-full flex items-end pb-12 md:pb-20">
         <motion.div
           style={{ y: contentY, opacity: contentOpacity }}
@@ -115,62 +84,28 @@ export function HeroSection() {
           {/* Main Text Content */}
           <div className="max-w-2xl">
             {/* Badge */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`badge-${currentSlide}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.6 }}
-                className="mb-8"
-              >
-                <span className="bg-gold/90 text-navy-dark px-4 py-1 text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm shadow-xl">
-                  {slide.badge}
-                </span>
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <span className="bg-gold/90 text-navy-dark px-4 py-1 text-[10px] font-bold uppercase tracking-[0.3em] rounded-sm shadow-xl">
+                Welcome to Ezra Center
+              </span>
+            </motion.div>
 
             {/* Heading */}
-            <AnimatePresence mode="wait">
-              <div key={`heading-container-${currentSlide}`} className="overflow-hidden">
-                <motion.h1
-                  className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.1] text-white"
-                >
-                  <motion.span
-                    className="block font-light"
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "-100%" }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    {slide.heading[0]}
-                  </motion.span>
-                  <motion.span
-                    className="block font-bold italic text-gold mt-2"
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "-100%" }}
-                    transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    {slide.heading[1]}
-                  </motion.span>
-                </motion.h1>
-              </div>
-            </AnimatePresence>
-
-            {/* Subtitle */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`subtitle-${currentSlide}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="mt-8 text-lg font-sans text-white/90 max-w-xl leading-relaxed border-l-2 border-gold/50 pl-6"
+            <div className="overflow-hidden">
+              <motion.h1
+                className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.1] text-white"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
-                {slide.subtitle}
-              </motion.p>
-            </AnimatePresence>
+                <span className="block font-bold italic"><span className="text-gold">Ezra</span> <span className="text-white">Center</span></span>
+              </motion.h1>
+            </div>
 
             {/* CTA Buttons */}
             <motion.div
@@ -197,15 +132,15 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Side Info / Stats Layer */}
+          {/* Side Info */}
           <div className="hidden md:flex flex-col items-end gap-12 pb-6">
             <div className="flex gap-1">
-              {heroSlides.map((_, i) => (
+              {heroImages.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => goToSlide(i)}
+                  onClick={() => setCurrentImage(i)}
                   className={`h-0.5 transition-all duration-700 ${
-                    i === currentSlide ? 'w-12 bg-gold' : 'w-4 bg-white/20 hover:bg-white/40'
+                    i === currentImage ? 'w-12 bg-gold' : 'w-4 bg-white/20 hover:bg-white/40'
                   }`}
                   aria-label={`View slide ${i + 1}`}
                 />
@@ -229,8 +164,7 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-
-      {/* Refined Scroll Indicator */}
+      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

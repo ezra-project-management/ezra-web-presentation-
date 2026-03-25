@@ -7,9 +7,9 @@ import { toast } from 'sonner'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 
 const contactInfo = [
-  { icon: MapPin, label: 'Location', value: 'Nairobi, Kenya' },
+  { icon: MapPin, label: 'Location', value: 'Ezra Center' },
   { icon: Phone, label: 'Phone', value: '+254 700 000 000' },
-  { icon: Mail, label: 'Email', value: 'hello@ezraannex.com' },
+  { icon: Mail, label: 'Email', value: 'hello@ezracenter.com' },
   { icon: Clock, label: 'Hours', value: 'Mon – Sun: 6:00 AM – 10:00 PM' },
 ]
 
@@ -168,13 +168,13 @@ export default function ContactPage() {
               <div className="bg-navy-light rounded-xl p-8 flex flex-col items-center justify-center min-h-[200px]">
                 <Image
                   src="/ezralogo.jpeg"
-                  alt="Ezra Annex"
+                  alt="Ezra Center"
                   width={64}
                   height={64}
                   className="rounded-full object-cover mb-3"
                 />
                 <p className="font-sans text-sm text-white/60 mt-1">
-                  Nairobi, Kenya
+                  Ezra Center
                 </p>
               </div>
 

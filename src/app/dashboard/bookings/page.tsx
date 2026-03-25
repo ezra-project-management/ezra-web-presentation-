@@ -106,7 +106,7 @@ export default function BookingsPage() {
             </p>
           </div>
           <Link
-            href="/services"
+            href="/dashboard/bookings/new"
             className="flex items-center gap-2 bg-gold text-navy font-sans text-sm font-semibold rounded-lg px-5 py-2.5 hover:bg-gold-light transition-all duration-300 shadow-md"
           >
             <Plus className="w-4 h-4" />

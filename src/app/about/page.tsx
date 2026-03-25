@@ -23,7 +23,7 @@ const values = [
     icon: Lightbulb,
     title: 'Innovation',
     description:
-      'We embrace technology and fresh ideas to continuously elevate our offerings.',
+      'We embrace technology and fresh ideas to continuously improve our offerings.',
   },
   {
     icon: Users,
@@ -33,15 +33,6 @@ const values = [
   },
 ]
 
-const team = [
-  { name: 'Sarah M.', title: 'General Manager', dept: 'Management', initials: 'SM' },
-  { name: 'Daniel K.', title: 'Head of Wellness', dept: 'Spa & Salon', initials: 'DK' },
-  { name: 'Faith W.', title: 'Fitness Director', dept: 'Gym & Pool', initials: 'FW' },
-  { name: 'Brian O.', title: 'Events Coordinator', dept: 'Events', initials: 'BO' },
-  { name: 'Linda N.', title: 'Guest Relations', dept: 'Hospitality', initials: 'LN' },
-  { name: 'Kevin A.', title: 'Head Chef', dept: 'Culinary', initials: 'KA' },
-]
-
 export default function AboutPage() {
   return (
     <>
@@ -49,7 +40,7 @@ export default function AboutPage() {
       <section className="relative h-64 md:h-80 flex items-center justify-center overflow-hidden">
         <Image
           src="/images/image-resizing-11.avif"
-          alt="Ezra Annex team"
+          alt="Ezra Center"
           fill
           priority
           className="object-cover brightness-110"
@@ -58,7 +49,7 @@ export default function AboutPage() {
         <div className="relative z-10 text-center">
           <Image
             src="/ezralogo.jpeg"
-            alt="Ezra Annex"
+            alt="Ezra Center"
             width={80}
             height={80}
             className="rounded-full object-cover mx-auto mb-4"
@@ -85,18 +76,18 @@ export default function AboutPage() {
                 Our Story
               </span>
               <h2 className="mt-3 font-display text-3xl md:text-4xl text-navy font-semibold">
-                Redefining Hospitality in Nairobi
+                Ezra Center
               </h2>
               <p className="mt-6 font-sans text-charcoal/80 leading-relaxed">
                 Founded with a vision to create an all-in-one lifestyle destination, Ezra
-                Annex brings together world-class wellness, fitness, events, and
-                wellness under one roof. Located in the heart of Nairobi, we combine
-                African warmth with international luxury standards.
+                Center brings together world-class wellness, fitness, events, and
+                business services under one roof. We combine warmth with international
+                standards to deliver something truly special.
               </p>
               <p className="mt-4 font-sans text-charcoal/80 leading-relaxed">
                 Our team of dedicated professionals is committed to delivering exceptional
                 experiences that leave lasting impressions. From a relaxing spa day to a
-                grand wedding celebration, every moment at Ezra Annex is crafted with care
+                grand wedding celebration, every moment at Ezra Center is designed with care
                 and attention to detail.
               </p>
             </AnimatedSection>
@@ -104,7 +95,7 @@ export default function AboutPage() {
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
                 <Image
                   src="/images/image-resizing-12.avif"
-                  alt="Ezra Annex facility"
+                  alt="Ezra Center facility"
                   fill
                   className="object-cover"
                 />
@@ -149,39 +140,6 @@ export default function AboutPage() {
       {/* Stats */}
       <StatsSection />
 
-      {/* Team */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-16">
-            <span className="text-gold font-sans text-sm font-medium uppercase tracking-widest">
-              Our Team
-            </span>
-            <h2 className="mt-3 font-display text-3xl md:text-4xl text-navy font-semibold">
-              Meet the People Behind the Magic
-            </h2>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {team.map((member, index) => (
-              <AnimatedSection key={member.name} delay={index * 0.1}>
-                <div className="text-center">
-                  <div className="w-20 h-20 rounded-full bg-navy text-white flex items-center justify-center mx-auto font-sans font-medium text-lg">
-                    {member.initials}
-                  </div>
-                  <h3 className="mt-3 font-display text-base font-semibold text-navy">
-                    {member.name}
-                  </h3>
-                  <p className="font-sans text-sm text-gold">{member.title}</p>
-                  <p className="font-sans text-xs text-charcoal/50">
-                    {member.dept}
-                  </p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="py-20 bg-navy">
         <div className="max-w-3xl mx-auto text-center px-4">
@@ -190,7 +148,7 @@ export default function AboutPage() {
               Join Our Family
             </h2>
             <p className="mt-4 font-sans text-white/70">
-              Become part of the Ezra Annex community and enjoy exclusive
+              Become part of the Ezra Center community and enjoy exclusive
               benefits, special offers, and premium experiences.
             </p>
             <Link

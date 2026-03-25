@@ -63,7 +63,7 @@ export function Navbar() {
               >
                 <Image
                   src="/ezralogo.jpeg"
-                  alt="Ezra Annex"
+                  alt="Ezra Center"
                   width={72}
                   height={72}
                   className="rounded-full object-cover"
@@ -193,7 +193,7 @@ export function Navbar() {
               >
                 <Image
                   src="/ezralogo.jpeg"
-                  alt="Ezra Annex"
+                  alt="Ezra Center"
                   width={64}
                   height={64}
                   className="rounded-full object-cover"
@@ -341,7 +341,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 px-2 py-1.5 bg-cream/90 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] active:scale-95 transition-transform duration-200">
           <Image
             src="/ezralogo.jpeg"
-            alt="Ezra Annex"
+            alt="Ezra Center"
             width={52}
             height={52}
             className="rounded-full object-cover"
@@ -372,7 +372,7 @@ export function Navbar() {
               <div className="flex items-center gap-3 px-6 pt-6 pb-4 border-b border-white/10">
                 <Image
                   src="/ezralogo.jpeg"
-                  alt="Ezra Annex"
+                  alt="Ezra Center"
                   width={40}
                   height={40}
                   className="rounded-full object-cover"

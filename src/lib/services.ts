@@ -3,7 +3,7 @@ export interface Service {
   slug: string
   name: string
   tagline: string
-  category: 'WELLNESS' | 'FITNESS' | 'BUSINESS' | 'EVENTS' | 'ACCOMMODATION'
+  category: 'WELLNESS' | 'FITNESS' | 'BUSINESS' | 'EVENTS'
   description: string
   basePrice: number
   duration: string
@@ -15,11 +15,9 @@ export interface Service {
 }
 
 export interface Testimonial {
-  name: string
-  role: string
   text: string
   rating: number
-  avatar: string
+  role: string
 }
 
 export interface Stat {
@@ -38,7 +36,7 @@ export const SERVICES: Service[] = [
       'Our friendly stylists and therapists are here to help you relax. Whether you need a fresh haircut or a calming massage, we make sure you leave feeling refreshed and happy.',
     basePrice: 0,
     duration: '60 min',
-    image: '/images/hero-spa.jpeg',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
     icon: '✦',
     highlights: [
       'Friendly stylists',
@@ -66,7 +64,7 @@ export const SERVICES: Service[] = [
       "Our barbers know how to get your look just right. Whether you're coming in for a quick trim or a traditional shave, we'll make sure you leave looking sharp.",
     basePrice: 0,
     duration: '45 min',
-    image: '/images/image-resizing-4.avif',
+    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80',
     icon: '✂',
     highlights: [
       'Experienced barbers',
@@ -93,7 +91,7 @@ export const SERVICES: Service[] = [
       'Everything you need for a great workout. We have a fully equipped gym, professional trainers, and group classes to help you reach your goals in a friendly environment.',
     basePrice: 0,
     duration: 'Per session',
-    image: '/images/image-resizing-5.avif',
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
     icon: '⊕',
     highlights: [
       'Modern equipment',
@@ -120,7 +118,7 @@ export const SERVICES: Service[] = [
       "Get some work done in our private meeting rooms. We have fast internet, ready-to-use screens, and coffee/catering so you can focus on what's important.",
     basePrice: 0,
     duration: 'Per hour',
-    image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/5ca5a320-c813-45c1-97df-16afea14bc00/public', 
+    image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/5ca5a320-c813-45c1-97df-16afea14bc00/public',
     icon: '◈',
     highlights: [
       'Fast WiFi',
@@ -144,7 +142,7 @@ export const SERVICES: Service[] = [
     tagline: 'A beautiful space for your big celebrations',
     category: 'EVENTS',
     description:
-      "Host up to 500 guests in our large ballroom. It's the perfect spot for weddings and big parties, with plenty of space for dancing and local support to help you plan it all.",
+      'Host up to 500 guests in our large ballroom. It is the perfect spot for weddings and big parties, with plenty of space for dancing and support to help you plan it all.',
     basePrice: 0,
     duration: 'Full day',
     image: 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/4e93453c-c18f-40f7-1d44-47348a51c600/public',
@@ -219,75 +217,39 @@ export const SERVICES: Service[] = [
     ],
     available: true,
   },
-  {
-    id: '8',
-    slug: 'rooms',
-    name: 'Accommodation',
-    tagline: 'Comfortable rooms for a good night’s rest',
-    category: 'ACCOMMODATION',
-    description:
-      'Stay with us and feel right at home. Our rooms are clean, cozy, and have everything you need for a relaxing night or a longer stay here in Nairobi.',
-    basePrice: 0,
-    duration: 'Per night',
-    image: '/images/image-resizing-9.avif',
-    icon: '⬡',
-    highlights: [
-      'Comfy beds',
-      'Private bathroom',
-      'Room service',
-      'Free WiFi',
-    ],
-    services: [
-      'Standard Room',
-      'Deluxe Room',
-      'Suite',
-      'Extended Stay Package',
-    ],
-    available: true,
-  },
 ]
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    name: 'Amara K.',
     role: 'Regular Member',
     text: 'The spa here is one of the best I have ever visited. I always feel so relaxed and ready to take on the day after my visit. The staff really care about you.',
     rating: 5,
-    avatar: 'AK',
   },
   {
-    name: 'David O.',
     role: 'Corporate Client',
     text: 'We had our team meeting here and everything was great. The tech worked, the food was good, and the room was exactly what we needed.',
     rating: 5,
-    avatar: 'DO',
   },
   {
-    name: 'Priya M.',
     role: 'Wedding Client',
     text: "Our wedding was perfect. Every little detail was taken care of, and our guests couldn't stop talking about how much they loved the place.",
     rating: 5,
-    avatar: 'PM',
   },
   {
-    name: 'James W.',
     role: 'Fitness Member',
     text: 'Best gym in the area. The trainers really know their stuff and they actually care about your progress. The equipment is always clean and ready to use.',
     rating: 5,
-    avatar: 'JW',
   },
   {
-    name: 'Grace A.',
-    role: 'Hotel Guest',
-    text: 'Stayed for a week and loved it. The room was super clean, the people were friendly, and the spa was a nice extra treat.',
+    role: 'Guest',
+    text: 'Loved the experience. The people were friendly, and the spa was a nice extra treat. Will definitely be coming back.',
     rating: 5,
-    avatar: 'GA',
   },
 ]
 
 export const STATS: Stat[] = [
-  { value: '5,000+', label: 'Local Members' },
-  { value: '8', label: 'Ways to Relax' },
+  { value: '5,000+', label: 'Members' },
+  { value: '7', label: 'Services' },
   { value: '15+', label: 'Friendly Staff' },
-  { value: '100%', label: 'Local Favorite' },
+  { value: '100%', label: 'Satisfaction' },
 ]

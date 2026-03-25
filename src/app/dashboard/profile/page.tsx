@@ -137,7 +137,7 @@ export default function ProfilePage() {
                   { label: 'Email', value: CURRENT_USER.email, verified: true },
                   { label: 'Phone', value: CURRENT_USER.phone, verified: false },
                   { label: 'Date of Birth', value: '1996-08-15', verified: false },
-                  { label: 'City', value: 'Nairobi', verified: false },
+                  { label: 'City', value: '', verified: false },
                 ].map((field) => (
                   <div key={field.label}>
                     <label className="flex items-center gap-2 font-sans text-xs uppercase tracking-widest text-gray-400 mb-2">

@@ -28,7 +28,7 @@ export function CTASection() {
       >
         <Image
           src="/images/image-resizing-6.avif"
-          alt="Ezra Annex lobby"
+          alt="Ezra Center lobby"
           fill
           className="object-cover brightness-110"
         />

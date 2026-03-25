@@ -20,7 +20,7 @@ const quickReplies = [
 const initialMessage: Message = {
   id: '1',
   role: 'ai',
-  text: "Hello! I'm your Ezra Annex assistant. I can help you book any service, check availability, or answer questions. How can I assist you today?",
+  text: "Hello! I'm your Ezra Center assistant. I can help you book any service, check availability, or answer questions. How can I assist you today?",
 }
 
 export function AIChatBubble() {
@@ -52,7 +52,7 @@ export function AIChatBubble() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-  system: `You are Ezra, the AI booking assistant for Ezra Annex — Nairobi's premier luxury hospitality and wellness destination. You help customers book services conversationally. Services: Salon & Spa (from KSh 0), Barbershop (from KSh 0), Fitness Centre (from KSh 0), Meeting Rooms (from KSh 0/hr), Ballroom (from KSh 0), Banquet Hall (from KSh 0), Swimming Pool Training (from KSh 0), Accommodation (from KSh 0/night). Working hours: 6am–10pm daily. Be warm, professional, and concise. Help with bookings, cancellations, reschedules, and questions.`,
+  system: `You are Ezra, the AI booking assistant for Ezra Center — a premier luxury hospitality and wellness destination. You help customers book services conversationally. Services: Salon & Spa (from KSh 0), Barbershop (from KSh 0), Fitness Centre (from KSh 0), Meeting Rooms (from KSh 0/hr), Ballroom (from KSh 0), Banquet Hall (from KSh 0), Swimming Pool Training (from KSh 0). Working hours: 6am–10pm daily. Be warm, professional, and concise. Help with bookings, cancellations, reschedules, and questions.`,
   messages: [...messages.filter(m => m.id !== '1'), userMessage].map(m => ({
     role: m.role === 'ai' ? 'assistant' : 'user',
     content: m.text,
