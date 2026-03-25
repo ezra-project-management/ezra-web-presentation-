@@ -135,6 +135,26 @@ export default function DashboardPage() {
 
   const hasBooking = useCallback((day: number) => bookingDates.has(getDayDateStr(day)), [getDayDateStr, bookingDates])
 
+  // Compute date availability: 'available' | 'partial' | 'full' | 'closed'
+  const getDateAvailability = useCallback((dateStr: string): 'available' | 'partial' | 'full' | 'closed' => {
+    if (dateStr < todayStr) return 'closed'
+    if (isClosedDay(dateStr)) return 'closed'
+    let totalSlots = 0
+    let bookedSlots = 0
+    for (const service of SERVICES) {
+      const cap = getServiceCapacity(service.slug)
+      for (const time of TIME_SLOTS) {
+        totalSlots += cap
+        bookedSlots += getSlotBookingCount(dateStr, time, service.slug)
+      }
+    }
+    if (totalSlots === 0) return 'closed'
+    const ratio = bookedSlots / totalSlots
+    if (ratio >= 0.95) return 'full'
+    if (ratio >= 0.5) return 'partial'
+    return 'available'
+  }, [todayStr, getSlotBookingCount])
+
   const prevMonth = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))
   const nextMonthFn = () => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))
 
@@ -296,29 +316,35 @@ export default function DashboardPage() {
                 {calendarDays.map((day, i) => {
                   if (day === null) return <div key={`e-${i}`} />
                   const dateStr = getDayDateStr(day)
-                  const isPast = dateStr < todayStr
                   const isSelected = dateStr === selectedDate
                   const isTodayDay = isToday(day)
-                  const hasBookingDay = hasBooking(day)
-                  const closed = isClosedDay(dateStr)
+                  const avail = getDateAvailability(dateStr)
+                  const disabled = avail === 'closed'
 
                   return (
                     <button
                       key={dateStr}
-                      disabled={isPast || !!closed}
+                      disabled={disabled}
                       onClick={() => handleDateClick(day)}
                       className={cn(
-                        'aspect-square flex items-center justify-center relative rounded-lg font-sans text-sm transition-all duration-200',
-                        isPast || closed ? 'text-charcoal/20 cursor-not-allowed' :
+                        'aspect-square flex flex-col items-center justify-center relative rounded-lg font-sans text-sm transition-all duration-200',
+                        disabled ? 'text-charcoal/20 cursor-not-allowed' :
                         isSelected ? 'bg-gold text-navy-dark font-bold shadow-md' :
                         isTodayDay ? 'ring-2 ring-gold/50 text-gold font-bold hover:bg-gold/10' :
-                        hasBookingDay ? 'bg-gold/15 text-navy font-medium hover:bg-gold/25' :
-                        'text-charcoal/70 hover:bg-cream cursor-pointer'
+                        avail === 'full' ? 'bg-red-50 text-red-400 font-medium' :
+                        avail === 'partial' ? 'bg-amber-50 text-amber-700 font-medium hover:bg-amber-100' :
+                        'text-charcoal/70 hover:bg-emerald-50 cursor-pointer'
                       )}
                     >
                       {day}
-                      {hasBookingDay && !isSelected && (
-                        <span className="absolute bottom-1 w-1 h-1 rounded-full bg-gold" />
+                      {/* Availability dot */}
+                      {!disabled && !isSelected && (
+                        <span className={cn(
+                          'absolute bottom-1 w-1.5 h-1.5 rounded-full',
+                          avail === 'available' ? 'bg-emerald-400' :
+                          avail === 'partial' ? 'bg-amber-400' :
+                          'bg-red-400'
+                        )} />
                       )}
                     </button>
                   )
@@ -326,12 +352,18 @@ export default function DashboardPage() {
               </div>
 
               {/* Legend */}
-              <div className="flex items-center justify-center gap-5 mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-gray-100 flex-wrap">
                 <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
-                  <span className="w-2 h-2 rounded-full bg-gold" /> Today
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" /> Available
                 </span>
                 <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
-                  <span className="w-2 h-2 rounded-full bg-gold/30" /> Booked
+                  <span className="w-2 h-2 rounded-full bg-amber-400" /> Filling up
+                </span>
+                <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
+                  <span className="w-2 h-2 rounded-full bg-red-400" /> Fully booked
+                </span>
+                <span className="flex items-center gap-1.5 font-sans text-[10px] text-charcoal/50">
+                  <span className="w-2 h-2 rounded-full bg-charcoal/15" /> Closed
                 </span>
               </div>
             </div>
@@ -418,8 +450,9 @@ export default function DashboardPage() {
                       {TIME_SLOTS.map(time => {
                         const booked = getSlotBookingCount(selectedDate, time, selectedService.slug)
                         const capacity = getServiceCapacity(selectedService.slug)
-                        const isFull = booked >= capacity
-                        const isFew = booked >= capacity - 1 && !isFull
+                        const available = Math.max(0, capacity - booked)
+                        const isFull = available === 0
+                        const isFew = available === 1
                         const isSelected = time === selectedTime
 
                         return (
@@ -429,10 +462,10 @@ export default function DashboardPage() {
                             onClick={() => setSelectedTime(time)}
                             className={cn(
                               'relative px-3 py-2.5 rounded-lg font-sans text-sm font-medium transition-all duration-200 border',
-                              isFull ? 'border-red-100 bg-red-50/50 text-red-300 cursor-not-allowed' :
+                              isFull ? 'border-red-200 bg-red-50/60 text-red-400 cursor-not-allowed' :
                               isSelected ? 'border-gold bg-gold text-navy-dark shadow-sm' :
-                              isFew ? 'border-amber-200 bg-amber-50/50 text-amber-700 hover:border-amber-400' :
-                              'border-gray-100 bg-white text-charcoal hover:border-gold/40'
+                              isFew ? 'border-amber-200 bg-amber-50/60 text-amber-700 hover:border-amber-400' :
+                              'border-emerald-200 bg-emerald-50/40 text-emerald-800 hover:border-emerald-400'
                             )}
                           >
                             {time}
@@ -441,11 +474,12 @@ export default function DashboardPage() {
                                 <Check className="w-2.5 h-2.5 text-navy-dark" />
                               </span>
                             )}
-                            {isFull && (
-                              <span className="block text-[9px] font-normal mt-0.5">Full</span>
-                            )}
-                            {isFew && !isSelected && (
-                              <span className="block text-[9px] font-normal mt-0.5">Last spot</span>
+                            {isFull ? (
+                              <span className="block text-[9px] font-normal mt-0.5">Fully booked</span>
+                            ) : isFew ? (
+                              <span className="block text-[9px] font-normal mt-0.5">1 spot left</span>
+                            ) : (
+                              <span className={cn('block text-[9px] font-normal mt-0.5', isSelected ? 'text-navy-dark/60' : 'text-emerald-600')}>{available} spots open</span>
                             )}
                           </button>
                         )
