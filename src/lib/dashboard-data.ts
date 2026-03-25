@@ -36,7 +36,7 @@ export const UPCOMING_BOOKINGS = [
     amount: 3500,
     paymentMethod: 'MPESA',
     mpesaRef: 'QJK123ABC',
-    image: '/images/hero-spa.jpeg',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
     notes: 'Preference: rose oil for massage',
     canReschedule: true,
     canCancel: true,
@@ -59,7 +59,7 @@ export const UPCOMING_BOOKINGS = [
     amount: 1200,
     paymentMethod: 'MPESA',
     mpesaRef: 'QJK456DEF',
-    image: '/images/image-resizing-6.avif',
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
     notes: null,
     canReschedule: true,
     canCancel: true,
@@ -104,7 +104,7 @@ export const PAST_BOOKINGS = [
     paymentMethod: 'MPESA',
     rating: 5,
     review: 'Grace was absolutely amazing. Best facial I have ever had.',
-    image: '/images/hero-spa.jpeg',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
   },
   {
     id: 'bk-011',
@@ -134,7 +134,7 @@ export const PAST_BOOKINGS = [
     paymentMethod: 'CASH',
     rating: 5,
     review: null,
-    image: '/images/image-resizing-6.avif',
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
   },
   {
     id: 'bk-013',
@@ -149,7 +149,7 @@ export const PAST_BOOKINGS = [
     paymentMethod: 'MPESA',
     rating: null,
     review: null,
-    image: '/images/image-resizing-5.avif',
+    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80',
   },
 ]
 
@@ -266,7 +266,7 @@ export const FAVOURITE_SERVICES = [
   {
     slug: 'salon-spa',
     name: 'Salon & Spa',
-    image: '/images/hero-spa.jpeg',
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
     rating: 4.9,
     basePrice: 1500,
     lastVisited: '2026-03-08',
@@ -274,7 +274,7 @@ export const FAVOURITE_SERVICES = [
   {
     slug: 'gym',
     name: 'Fitness Centre',
-    image: '/images/image-resizing-6.avif',
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
     rating: 4.8,
     basePrice: 1200,
     lastVisited: '2026-02-22',

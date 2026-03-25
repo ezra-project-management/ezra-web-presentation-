@@ -97,13 +97,13 @@ type SeedBooking = {
 }
 
 const SERVICE_IMAGES: Record<string, string> = {
-  'salon-spa': '/images/hero-spa.jpeg',
-  'barbershop': '/images/image-resizing-5.avif',
-  'gym': '/images/image-resizing-6.avif',
-  'boardroom': '/images/image-resizing-7.avif',
-  'ballroom': '/images/image-resizing-2.jpeg',
-  'banquet-hall': '/images/image-resizing.jpeg',
-  'swimming-pool': '/images/image-resizing-8.avif',
+  'salon-spa': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&q=80',
+  'barbershop': 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80',
+  'gym': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
+  'boardroom': 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/5ca5a320-c813-45c1-97df-16afea14bc00/public',
+  'ballroom': 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/4e93453c-c18f-40f7-1d44-47348a51c600/public',
+  'banquet-hall': 'https://imagedelivery.net/K1DCBIh16uT0nsikD2vMaA/ba91ccad-a7a1-463e-25be-00131cc7d300/public',
+  'swimming-pool': '/images/image-resizing-10.avif',
 }
 
 function makeSeed(id: string, serviceSlug: string, serviceName: string, date: string, time: string): SeedBooking {
