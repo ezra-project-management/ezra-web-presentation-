@@ -86,17 +86,10 @@ export function Navbar() {
                     className={cn(
                       'relative px-4 py-2 font-sans text-sm font-medium rounded-full transition-all duration-300 flex items-center gap-1.5',
                       pathname === link.href
-                        ? 'text-navy-dark'
+                        ? 'text-gold'
                         : 'text-white/70 hover:text-white hover:bg-white/10'
                     )}
                   >
-                    {pathname === link.href && (
-                      <motion.span
-                        layoutId="pillActive"
-                        className="absolute inset-0 bg-gold rounded-full"
-                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                      />
-                    )}
                     <span className="relative z-10">{link.name}</span>
                     {link.hasDropdown && (
                       <motion.span
@@ -211,7 +204,7 @@ export function Navbar() {
                       className={cn(
                         'flex items-center gap-3 px-3 py-2.5 rounded-xl font-sans text-sm transition-all duration-300',
                         pathname === link.href
-                          ? 'bg-gold/20 text-gold'
+                          ? 'text-gold'
                           : 'text-white/60 hover:text-white hover:bg-white/5'
                       )}
                       onMouseEnter={() => link.hasDropdown && sidebarExpanded && setServicesOpen(true)}
@@ -398,7 +391,7 @@ export function Navbar() {
                           className={cn(
                             'flex items-center justify-between w-full px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
                             pathname === link.href
-                              ? 'bg-gold/20 text-gold'
+                              ? 'text-gold'
                               : 'text-white/70 active:bg-white/5'
                           )}
                         >
@@ -439,7 +432,7 @@ export function Navbar() {
                         className={cn(
                           'flex items-center gap-3 px-4 py-3 rounded-xl font-sans text-sm font-medium transition-all',
                           pathname === link.href
-                            ? 'bg-gold/20 text-gold'
+                            ? 'text-gold'
                             : 'text-white/70 active:bg-white/5'
                         )}
                       >
